@@ -1,0 +1,231 @@
+service: Sylor
+
+plugins:
+  - serverless-wsgi
+  - serverless-python-requirements
+
+custom:
+  dynamodb:
+    start:
+      migrate: false # auto migrate on dynamodb start
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: eu-central-1
+  memorySize: 128
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorUsersTable", "Arn" ] }
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorTranslations", "Arn" ] }
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorProducts", "Arn" ] }
+
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorProductCategorySchema", "Arn" ] }
+
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorProductSpecifics", "Arn" ] }
+
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorProductGeneralSpecs", "Arn" ] }
+
+functions:
+  login_be:
+    handler: authenticate/user_login.loging_request_receiver
+    events:
+      - httpApi:
+          method: 'POST'
+          path: /login
+
+  user_management:
+    handler: endpoints/users.user_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /users
+      - httpApi:
+          method: 'GET'
+          path: /users/username
+      - httpApi:
+          method: 'POST'
+          path: /users/signup
+      - httpApi:
+          method: 'DELETE'
+          path: /users/delete
+      - httpApi:
+          method: 'PUT'
+          path: /users/edit
+
+  translations_management:
+    handler: endpoints/product_management/translations.translations_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /translations
+      - httpApi:
+          method: 'GET'
+          path: /translations/id
+      - httpApi:
+          method: 'POST'
+          path: /translations/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /translations/delete
+      - httpApi:
+          method: 'PUT'
+          path: /translations/edit
+
+  products_management:
+    handler: endpoints/product_management/products.product_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /products
+      - httpApi:
+          method: 'GET'
+          path: /products/id
+      - httpApi:
+          method: 'POST'
+          path: /products/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /products/delete
+      - httpApi:
+          method: 'PUT'
+          path: /products/edit
+
+resources:
+  Resources:
+    sylorUsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorUsersTable
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorTranslations:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorTranslations
+        AttributeDefinitions:
+          - AttributeName: translation_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: translation_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorProductSpecifics:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorProductSpecifics
+        AttributeDefinitions:
+          - AttributeName: specifics_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: specifics_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorProductCategorySchema:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorProductCategorySchema
+        AttributeDefinitions:
+          - AttributeName: schemas_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: schemas_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorProductGeneralSpecs:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorProductGeneralSpecs
+        AttributeDefinitions:
+          - AttributeName: general_spec_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: general_spec_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorProducts:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorProducts
+        AttributeDefinitions:
+          - AttributeName: product_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: product_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

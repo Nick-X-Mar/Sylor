@@ -1,0 +1,39 @@
+{
+   "version":"2.0",
+   "routeKey":"POST /products/registration",
+   "rawPath":"/products/registration",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"469",
+      "content-type":"application/json",
+      "host":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"b79cc779-9760-4567-a362-58aceee9f409",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-6372b200-2647335813ba87d00d59cec9",
+      "x-forwarded-for":"2.84.72.230",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"iju6pw1c3l",
+      "domainName":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"iju6pw1c3l",
+      "http":{
+         "method":"POST",
+         "path":"/products/registration",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"2.84.72.230",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"bnDAChPhliAEJPA=",
+      "routeKey":"POST /products/registration",
+      "stage":"$default",
+      "time":"14/Nov/2022:21:24:16 +0000",
+      "timeEpoch":1668461056058
+   },
+   "body":"{\r\n        \"product_id\": \"123213123\",\r\n        \"product_name\": \"αβω\",\r\n        \"product_name_id\": \"aaabbvv\",\r\n        \"img\": \"url/url\",\r\n        \"typologies\": [\r\n                {\r\n                        \"translation_id\": \"123\",\r\n                        \"translation\": \"ςερτγηδσφσδ\"\r\n                }\r\n        ],\r\n        \"specials\": [\r\n                \"αααπσδασδπασδ\",\r\n                \"ασβδιθασηδιξβνκξν ψ\"\r\n        ]\r\n}",
+   "isBase64Encoded":false
+}

@@ -1,0 +1,40 @@
+{
+   "version":"2.0",
+   "routeKey":"DELETE /users/delete",
+   "rawPath":"/users/delete",
+   "rawQueryString":"username=nikos",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"0",
+      "host":"igf8n3moq6.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"13322e9e-2259-4e9a-84f4-b191d3322465",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-63274417-0c5062b27c04619d4b309e30",
+      "x-forwarded-for":"85.73.46.126",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "queryStringParameters":{
+      "username":"nikos2@gmail.com"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"igf8n3moq6",
+      "domainName":"igf8n3moq6.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"igf8n3moq6",
+      "http":{
+         "method":"DELETE",
+         "path":"/users/delete",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"85.73.46.126",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"YqeTwjHqFiAEMFg=",
+      "routeKey":"DELETE /users/delete",
+      "stage":"$default",
+      "time":"18/Sep/2022:16:15:19 +0000",
+      "timeEpoch":1663517719864
+   },
+   "isBase64Encoded":false
+}

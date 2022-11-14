@@ -1,0 +1,39 @@
+{
+   "version":"2.0",
+   "routeKey":"POST /login",
+   "rawPath":"/login",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"65",
+      "content-type":"application/json",
+      "host":"09bz5vivg7.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"e24c83c2-fe8d-4ee1-a715-2adad8f03eea",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-6334c20e-1ccabf830dcfffd5764ece36",
+      "x-forwarded-for":"85.73.46.126",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"09bz5vivg7",
+      "domainName":"09bz5vivg7.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"09bz5vivg7",
+      "http":{
+         "method":"POST",
+         "path":"/login",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"85.73.46.126",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"ZMNCXhQxFiAEMOQ=",
+      "routeKey":"POST /login",
+      "stage":"$default",
+      "time":"28/Sep/2022:21:52:14 +0000",
+      "timeEpoch":1664401934963
+   },
+   "body":"{\r\n    \"password\": \"123456\",\r\n    \"username\": \"nikos\"\r\n}",
+   "isBase64Encoded":false
+}

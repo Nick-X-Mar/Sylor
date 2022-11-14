@@ -1,0 +1,39 @@
+{
+   "version":"2.0",
+   "routeKey":"POST /translations/registration",
+   "rawPath":"/translations/registration",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"235",
+      "content-type":"application/json",
+      "host":"js7qalyf8b.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"82570b69-4e96-432e-9d02-2562a49d8bf6",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-63681c9d-76e3d58d5bf27c7101d69c87",
+      "x-forwarded-for":"2.84.72.230",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"js7qalyf8b",
+      "domainName":"js7qalyf8b.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"js7qalyf8b",
+      "http":{
+         "method":"POST",
+         "path":"/translations/registration",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"2.84.72.230",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"bMlopg08liAEPlQ=",
+      "routeKey":"POST /translations/registration",
+      "stage":"$default",
+      "time":"06/Nov/2022:20:44:13 +0000",
+      "timeEpoch":1667767453521
+   },
+   "body":"{\n        \"el\": \"Παραθυρο Υαλοστασιου\",\n        \"en\": \"XXX\"\n        }",
+   "isBase64Encoded":false
+}

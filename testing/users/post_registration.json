@@ -1,0 +1,39 @@
+{
+   "version":"2.0",
+   "routeKey":"POST /users/signup",
+   "rawPath":"/users/signup",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"132",
+      "content-type":"application/json",
+      "host":"ln32nuhkch.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"b4bcdb27-6314-4e17-a757-f6ed5c9e13c7",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-63249c22-101618a71a6f592976e4f192",
+      "x-forwarded-for":"85.73.46.126",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"ln32nuhkch",
+      "domainName":"ln32nuhkch.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"ln32nuhkch",
+      "http":{
+         "method":"POST",
+         "path":"/users/signup",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"85.73.46.126",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"Yj1VcialliAEJ9A=",
+      "routeKey":"POST /users/signup",
+      "stage":"$default",
+      "time":"16/Sep/2022:15:54:10 +0000",
+      "timeEpoch":1663343650697
+   },
+   "body":"{\r\n\t\"title\":\"Mr\",\r\n\t\"firstName\":\"Nikos\",\r\n\t\"lastName\":\"asd\",\r\n\t\"user_role\":\"User\",\r\n\t\"username\":\"nikos1\",\r\n\t\"password\":\"123456\"\r\n}",
+   "isBase64Encoded":false
+}
