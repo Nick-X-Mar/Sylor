@@ -15,33 +15,47 @@ def register_new_product(product):
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
-    product_id = uuid.uuid4()
 
-    typologies = json.loads(str(product.get('typologies')).replace("'", '"'))
-    specials = json.loads(str(product.get('specials')).replace("'", '"'))
-    typos = {}
-    for key, value in typologies.items():
-        typos[key] = value
-    print(f"typos: {typos}")
+    # typologies = json.loads(str(product.get('typologies')).replace("'", '"'))
+    # typologies = product.get('typologies')
+    # specials = json.loads(str(product.product.get('specials')).replace("'", '"'))
+    # typos = {}
+    # for typology in typologies:
+    # for key, value in typologies.items():
+    #     typos[key] = value
 
     item = {
-        'translation_id': str(product_id),
-        'product_name': product.get('product_name'),
+        'product_key': str(uuid.uuid4()),
         'product_name_id': product.get('product_name_id'),
-        'img': product.get('img'),
-        'typologies': typos
+        'img_url': product.get('img'),
+        'typology_id': product.get('typology_id')
     }
-    print(f"item: {item}")
+
+    specials = product.get('specials')
+    for sp in specials:
+        item[sp.get('special_title_id')] = sp.get('special_id')
+
     try:
         table.put_item(
             Item=item,
             ConditionExpression='attribute_not_exists(translation_id)'
         )
-        return func_resp(msg="Translation Registered", data=[], status=200)
+        return func_resp(msg="Product Registered", data=[], status=200)
     except exceptions.ParamValidationError as error:
         print('The parameters you provided are incorrect: {}'.format(error))
-        return func_resp(msg="Registration not completed.", data=[], status=400)
+        return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
+
+    except exceptions.ClientError as e:
+        print(f"Failed to register product with error: {str(e.response.get('Error'))}")
+        msg = e.response.get('Error', {"Message": None}).get('Message')
+        if msg is None:
+            msg = "Failed to register product."
+        else:
+            msg = "product_key does not exist"
+        return func_resp(msg=msg, data=[], status=400)
+
     except:
+        print(f"Tried to store item: {item}")
         return func_resp(msg="Registration not completed.", data=[], status=400)
 
 
@@ -54,23 +68,29 @@ def check_request_post(headers, args):
     except:
         return func_resp(msg="Request body is not valid json", data=[], status=400)
     print(args)
+    # print(type(args))
+    # print(args.get('product_name'))
+    # args['product_name'] = args.get('product_name')
+    # print(args)
     if not args or args is None:
         return func_resp(msg="Nothing send for insert.", data=[], status=400)
 
     product_name = args.get('product_name')
     product_name_id = args.get('product_name_id')
     img = args.get('img')
-    typologies = args.get('typologies')
+    typology_id = args.get('typology_id')
+    typology_name = args.get('typology_name')
     specials = args.get('specials')
 
-    if all(item is None for item in [product_name, product_name_id, img, typologies, specials]):
+    if all(item is None for item in [product_name, product_name_id, img, typology_id, typology_name, specials]):
         return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
-    try:
-        typologies = json.loads(str(args.get('typologies')).replace("'", '"'))
-        specials = json.loads(str(args.get('specials')).replace("'", '"'))
-    except:
-        return func_resp(msg="Request body is not valid json", data=[], status=400)
+    # try:
+    #     print(type(args.get('typologies')))
+    #     typologies = json.loads(str(args.get('typologies')).replace("'", '"'))
+    #     specials = json.loads(str(args.get('specials')).replace("'", '"'))
+    # except:
+    #     return func_resp(msg="Request body is not valid json", data=[], status=400)
 
     return func_resp(msg="", data=[], status=200)
 
@@ -126,6 +146,7 @@ def product_related_methods(event, context):
         body = event.get("body")
         status, msg, data = check_request_post(headers, body)
         if status == 200:
+            body = json.loads(body)
             status, msg, data = register_new_product(body)
         return api_resp(msg=msg, data=data, status=status)
 
