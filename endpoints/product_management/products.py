@@ -5,8 +5,87 @@ from authenticate.auth import token_required
 from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
-from config.config import DYNAMODB_PRODUCTS_TABLE
+from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
 from endpoints.get_single_user import execute_get_user_by_username
+from endpoints.product_management.translations import get_all_translations
+
+
+def connect_ids_with_translations(headers, products, lang='el'):
+    print(products)
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    table = client.Table(DYNAMODB_TRANSLATIONS_TABLE)
+    res = table.scan()
+    if res.get('Items') is not None and len(res['Items']) > 0:
+        translations = res['Items']
+    else:
+        return []
+
+    list_of_translation_ids = []
+    list_of_translation_names = []
+    for t in translations:
+        for k, v in t.items():
+            if k == 'translation_id':
+                list_of_translation_ids.append(v)
+                # print(t.keys())
+                if lang in t.keys():
+                    list_of_translation_names.append(t[lang])
+                else:
+                    list_of_translation_names.append("missing")
+    # print(list_of_translation_ids)
+    # if not isinstance(products, list):
+    #     products = [products]
+
+    friendly_products = []
+    for product in products:
+        temp = {}
+        for k, v in product.items():
+            if k in list_of_translation_ids:
+                k = list_of_translation_names[list_of_translation_ids.index(k)]
+            if v in list_of_translation_ids:
+                v = list_of_translation_names[list_of_translation_ids.index(v)]
+            temp[k] = v
+        friendly_products.append(temp)
+
+    return friendly_products
+
+
+def get_all_products(headers):
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+    res = table.scan()
+    if res.get('Items') is not None and len(res['Items']) > 0:
+        data = connect_ids_with_translations(headers, res['Items'])
+        return func_resp(msg='', data=data, status=200)
+    else:
+        return func_resp(msg='', data=[], status=200)
+
+
+def get_product_by_id(headers, translation_id):
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+    try:
+        response = table.get_item(
+            Key={'translation_id': translation_id})
+
+        if response.get('Item') is None:
+            return func_resp(msg="Translation not found.", data=[], status=404)
+        else:
+            return func_resp(msg="Translation data returned.", data=response['Item'], status=200)
+    except:
+        data = json.dumps({
+            "translation_id": translation_id
+        })
+        print(f"Error: Failed to retrieve translation with data: {data}.")
+        return func_resp(msg="Failed to retrieve translation.", data=[], status=400)
 
 
 def register_new_product(product):
@@ -131,16 +210,16 @@ def product_related_methods(event, context):
     method = event.get("requestContext").get("http").get("method")
     # print(method)
     headers = event.get('headers')
-    # if method == "GET":
-    #     if event.get("rawPath") == '/users/username':
-    #         username = event.get("queryStringParameters", {'username': None}).get("username")
-    #         if username is not None and username != "":
-    #             # print(get_user_username(username))
-    #             status, msg, data = get_user_username(headers, username)
-    #             return api_resp(msg=msg, data=data, status=status)
-    #         return api_resp(msg="Username not specified", data=[], status=400)
-    #     status, msg, data = get_all_users(headers)
-    #     return api_resp(msg=msg, data=data, status=status)
+    if method == "GET":
+        if event.get("rawPath") == '/users/username':
+            username = event.get("queryStringParameters", {'username': None}).get("username")
+            if username is not None and username != "":
+                # print(get_user_username(username))
+                status, msg, data = get_product_by_id(headers, username)
+                return api_resp(msg=msg, data=data, status=status)
+            return api_resp(msg="Username not specified", data=[], status=400)
+        status, msg, data = get_all_products(headers)
+        return api_resp(msg=msg, data=data, status=status)
 
     if method == "POST":
         body = event.get("body")
