@@ -2,41 +2,143 @@ import json
 import uuid
 from passlib.hash import pbkdf2_sha256
 from authenticate.auth import token_required
+from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
-from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
+from databases.dbs import connect_to_dynamodb_resource
 from config.config import DYNAMODB_CATEGORY_TABLE
-from botocore.exceptions import ClientError
 from endpoints.get_single_user import execute_get_user_by_username
 
 
-def register_new_product(product):
+# def traverse_items(item, list_of_translation_ids, list_of_translation_names):
+#     friendly_items = []
+#     temp = {}
+#     for k, v in item.items():
+#         if k in list_of_translation_ids:
+#             k = list_of_translation_names[list_of_translation_ids.index(k)]
+#         if isinstance(v, dict):
+#             v = traverse_items(v, list_of_translation_ids, list_of_translation_names)
+#         elif isinstance(v, list):
+#             inner_list = []
+#             for inner_k in v:
+#                 if inner_k in list_of_translation_ids:
+#                     inner_list.append(list_of_translation_names[list_of_translation_ids.index(inner_k)])
+#             v = inner_list
+#         if isinstance(v, str):
+#             if v in list_of_translation_ids:
+#                 v = list_of_translation_names[list_of_translation_ids.index(v)]
+#         if k[-3:] == "_id":
+#             k = k[:-3]
+#         temp[k] = v
+#     friendly_items.append(temp)
+#     return friendly_items
+#
+#
+# def connect_ids_with_translations(headers, products, lang='el'):
+#     client, status = connect_to_dynamodb_resource()
+#     if status != 200:
+#         return func_resp(msg=client, data=[], status=status)
+#
+#     table = client.Table(DYNAMODB_TRANSLATIONS_TABLE)
+#
+#     res = table.scan()
+#     if res.get('Items') is not None and len(res['Items']) > 0:
+#         translations = res['Items']
+#     else:
+#         return func_resp(msg='Translations table does not exist', data=[], status=200)
+#
+#     list_of_translation_ids = []
+#     list_of_translation_names = []
+#     for t in translations:
+#         for k, v in t.items():
+#             if k == 'translation_id':
+#                 list_of_translation_ids.append(v)
+#                 if lang in t.keys():
+#                     list_of_translation_names.append(t[lang])
+#                 else:
+#                     list_of_translation_names.append("missing")
+#
+#     friendly_products = []
+#     for product in products:
+#         friendly_products.extend(traverse_items(product, list_of_translation_ids, list_of_translation_names))
+#     return func_resp(msg='', data=friendly_products, status=200)
+from endpoints.translations_helper import connect_ids_with_translations
+
+
+def get_all_products(headers):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_CATEGORY_TABLE)
-    product_id = uuid.uuid4()
+    res = table.scan()
+    if res.get('Items') is not None and len(res['Items']) > 0:
+        status, msg, data = connect_ids_with_translations(headers, res['Items'])
+        return func_resp(msg=msg, data=data, status=status)
+    else:
+        return func_resp(msg='', data=[], status=200)
+
+
+def get_product_by_id(headers, schemas_key):
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    table = client.Table(DYNAMODB_CATEGORY_TABLE)
+    # print(product_key)
+    try:
+        response = table.get_item(Key={'schemas_key': schemas_key})
+    except:
+        data = json.dumps({
+            "schemas_key": schemas_key
+        })
+        print(f"Error: Failed to retrieve product with data: {data}.")
+        return func_resp(msg="Failed to retrieve product.", data=[], status=400)
+
+    # print(response.get('Item'))
+    if response.get('Item') is None:
+        return func_resp(msg=f"Product with schemas_key:{schemas_key} not found.", data=[], status=404)
+    else:
+        status, msg, data = connect_ids_with_translations(headers, [response['Item']])
+        return func_resp(msg=msg, data=data, status=status)
+
+
+def register_new_product_schema(product):
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    table = client.Table(DYNAMODB_CATEGORY_TABLE)
     item = {
-        'translation_id': str(product_id),
-        'product_name': product.get('product_name'),
+        'schemas_key': str(uuid.uuid4()),
         'product_name_id': product.get('product_name_id'),
-        'img': product.get('img'),
-        'typologies': product.get('typologies'),
-        'specials': product.get('specials'),
+        'typologies': product.get('typologies')
     }
-    for key, value in translations.items():
-        item[key] = value
-    # print(f"Item: {item}")
+
+    specials = product.get('specials')
+    for k, v in specials.items():
+        item[k] = v
+
     try:
         table.put_item(
             Item=item,
-            ConditionExpression='attribute_not_exists(translation_id)'
+            ConditionExpression='attribute_not_exists(schemas_key)'
         )
-        return func_resp(msg="Translation Registered", data=[], status=200)
+        return func_resp(msg="Product Schema Registered", data=[], status=200)
     except exceptions.ParamValidationError as error:
         print('The parameters you provided are incorrect: {}'.format(error))
-        return func_resp(msg="Registration not completed.", data=[], status=400)
+        return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
+
+    except exceptions.ClientError as e:
+        print(f"Failed to register product schema with error: {str(e.response.get('Error'))}")
+        msg = e.response.get('Error', {"Message": None}).get('Message')
+        if msg is None:
+            msg = "Failed to register product schema."
+        else:
+            msg = "schemas_key does not exist"
+        return func_resp(msg=msg, data=[], status=400)
+
     except:
+        print(f"Tried to store item: {item}")
         return func_resp(msg="Registration not completed.", data=[], status=400)
 
 
@@ -44,7 +146,6 @@ def register_new_product(product):
 def check_request_post(headers, args):
     if args is None:
         return func_resp(msg="Please complete all required fields.", data=[], status=400)
-
     try:
         args = json.loads(args)
     except:
@@ -53,13 +154,11 @@ def check_request_post(headers, args):
     if not args or args is None:
         return func_resp(msg="Nothing send for insert.", data=[], status=400)
 
-    product_name = args.get('product_name')
     product_name_id = args.get('product_name_id')
-    img = args.get('img')
-    typologies = args.get('typologies')
     specials = args.get('specials')
+    typologies = args.get('typologies')
 
-    if all(item is None for item in [product_name, product_name_id, img, typologies, specials]):
+    if not specials or not typologies or product_name_id is None:
         return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
     return func_resp(msg="", data=[], status=200)
@@ -96,31 +195,31 @@ def check_request_put(headers, old_username, body):
 
 
 # @token_required
-def product_category_related_methods(event, context):
+def product_schema_related_methods(event, context):
     print(event)
     method = event.get("requestContext").get("http").get("method")
     # print(method)
     headers = event.get('headers')
-    # if method == "GET":
-    #     if event.get("rawPath") == '/users/username':
-    #         username = event.get("queryStringParameters", {'username': None}).get("username")
-    #         if username is not None and username != "":
-    #             # print(get_user_username(username))
-    #             status, msg, data = get_user_username(headers, username)
-    #             return api_resp(msg=msg, data=data, status=status)
-    #         return api_resp(msg="Username not specified", data=[], status=400)
-    #     status, msg, data = get_all_users(headers)
-    #     return api_resp(msg=msg, data=data, status=status)
+    if method == "GET":
+        if event.get("rawPath") == '/product_schema/id':
+            schemas_key = event.get("queryStringParameters", {'schemas_key': None}).get("schemas_key")
+            if schemas_key is not None and schemas_key != "":
+                status, msg, data = get_product_by_id(headers, schemas_key)
+                return api_resp(msg=msg, data=data, status=status)
+            return api_resp(msg="Product_key not specified", data=[], status=400)
+        status, msg, data = get_all_products(headers)
+        return api_resp(msg=msg, data=data, status=status)
 
     if method == "POST":
         body = event.get("body")
         status, msg, data = check_request_post(headers, body)
         if status == 200:
-            status, msg, data = register_new_product(body)
+            body = json.loads(body)
+            status, msg, data = register_new_product_schema(body)
         return api_resp(msg=msg, data=data, status=status)
 
     # elif method == "PUT":
-    #     username = event.get("queryStringParameters", {'username': None}).get("username")
+    #     product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
     #     body = json.loads(event.get("body"))
     #     status, msg, data = check_request_put(headers, username, body)
     #     if status == 200:
@@ -128,7 +227,7 @@ def product_category_related_methods(event, context):
     #     return api_resp(msg=msg, data=data, status=status)
     #
     # elif method == "DELETE":
-    #     username = event.get("queryStringParameters", {'username': None}).get("username")
+    #     product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
     #     status, msg, data = check_request_delete(headers, username)
     #     if status == 200:
     #         status, msg, data = delete_user(username)
@@ -136,7 +235,3 @@ def product_category_related_methods(event, context):
 
     else:
         return api_resp(msg="Not Allowed Method", data=[], status=400)
-
-
-# if __name__ == "__main__":
-#     check_request_post("a", "v")

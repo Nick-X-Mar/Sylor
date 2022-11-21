@@ -1,0 +1,37 @@
+{
+   "version":"2.0",
+   "routeKey":"GET /product_schema",
+   "rawPath":"/product_schema",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"0",
+      "host":"js7qalyf8b.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"81d7b6b9-ccf7-43ac-a6f6-3d3dcadbf153",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-63680ab9-350632574fc15fe6040c364a",
+      "x-forwarded-for":"2.84.72.230",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"js7qalyf8b",
+      "domainName":"js7qalyf8b.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"js7qalyf8b",
+      "http":{
+         "method":"GET",
+         "path":"/product_schema",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"2.84.72.230",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"bMadCgMXFiAEPyw=",
+      "routeKey":"GET /product_schema",
+      "stage":"$default",
+      "time":"06/Nov/2022:19:27:53 +0000",
+      "timeEpoch":1667762873680
+   },
+   "isBase64Encoded":false
+}

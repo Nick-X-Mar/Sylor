@@ -7,45 +7,46 @@ from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
 from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
 from endpoints.get_single_user import execute_get_user_by_username
+from endpoints.translations_helper import connect_ids_with_translations
 
 
-def connect_ids_with_translations(headers, products, lang='el'):
-    client, status = connect_to_dynamodb_resource()
-    if status != 200:
-        return func_resp(msg=client, data=[], status=status)
-
-    table = client.Table(DYNAMODB_TRANSLATIONS_TABLE)
-
-    res = table.scan()
-    if res.get('Items') is not None and len(res['Items']) > 0:
-        translations = res['Items']
-    else:
-        return func_resp(msg='Translations table does not exist', data=[], status=200)
-
-    list_of_translation_ids = []
-    list_of_translation_names = []
-    for t in translations:
-        for k, v in t.items():
-            if k == 'translation_id':
-                list_of_translation_ids.append(v)
-                if lang in t.keys():
-                    list_of_translation_names.append(t[lang])
-                else:
-                    list_of_translation_names.append("missing")
-
-    friendly_products = []
-    for product in products:
-        temp = {}
-        for k, v in product.items():
-            if k in list_of_translation_ids:
-                k = list_of_translation_names[list_of_translation_ids.index(k)]
-            if v in list_of_translation_ids:
-                v = list_of_translation_names[list_of_translation_ids.index(v)]
-            if k[-3:] == "_id":
-                k = k[:-3]
-            temp[k] = v
-        friendly_products.append(temp)
-    return func_resp(msg='', data=friendly_products, status=200)
+# def connect_ids_with_translations(headers, products, lang='el'):
+#     client, status = connect_to_dynamodb_resource()
+#     if status != 200:
+#         return func_resp(msg=client, data=[], status=status)
+#
+#     table = client.Table(DYNAMODB_TRANSLATIONS_TABLE)
+#
+#     res = table.scan()
+#     if res.get('Items') is not None and len(res['Items']) > 0:
+#         translations = res['Items']
+#     else:
+#         return func_resp(msg='Translations table does not exist', data=[], status=200)
+#
+#     list_of_translation_ids = []
+#     list_of_translation_names = []
+#     for t in translations:
+#         for k, v in t.items():
+#             if k == 'translation_id':
+#                 list_of_translation_ids.append(v)
+#                 if lang in t.keys():
+#                     list_of_translation_names.append(t[lang])
+#                 else:
+#                     list_of_translation_names.append("missing")
+#
+#     friendly_products = []
+#     for product in products:
+#         temp = {}
+#         for k, v in product.items():
+#             if k in list_of_translation_ids:
+#                 k = list_of_translation_names[list_of_translation_ids.index(k)]
+#             if v in list_of_translation_ids:
+#                 v = list_of_translation_names[list_of_translation_ids.index(v)]
+#             if k[-3:] == "_id":
+#                 k = k[:-3]
+#             temp[k] = v
+#         friendly_products.append(temp)
+#     return func_resp(msg='', data=friendly_products, status=200)
 
 
 def get_all_products(headers):

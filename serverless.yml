@@ -149,6 +149,25 @@ functions:
           method: 'PUT'
           path: /products/edit
 
+  product_schema_management:
+    handler: endpoints/product_management/product_category_schema.product_schema_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /product_schema
+      - httpApi:
+          method: 'GET'
+          path: /product_schema/id
+      - httpApi:
+          method: 'POST'
+          path: /product_schema/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /product_schema/delete
+      - httpApi:
+          method: 'PUT'
+          path: /product_schema/edit
+
 resources:
   Resources:
     sylorUsersTable:
