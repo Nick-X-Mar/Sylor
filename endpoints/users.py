@@ -207,11 +207,11 @@ def check_request_put(headers, old_username, body):
     if all(item is None for item in [firstName, lastName, password]):
         return func_resp(msg='Please complete at least one field.', data=[], status=400)
 
-    status, msg, data = execute_get_user_by_username(username=old_username)
-    if status == 200:
-        return func_resp(msg='', data=[], status=200)
+    # status, msg, data = execute_get_user_by_username(username=old_username)
+    # if status == 200:
+    return func_resp(msg='', data=[], status=200)
 
-    return func_resp(msg=msg, data=data, status=status)
+    # return func_resp(msg=msg, data=data, status=status)
 
 
 @token_required
@@ -236,7 +236,7 @@ def user_related_methods(event, context):
         status, msg, data = get_all_users(headers)
         return api_resp(msg=msg, data=data, status=status)
 
-    elif method == "POST":  # Could generate UUID
+    elif method == "POST":
         body = event.get("body")
         status, msg, data = check_request_post(headers, body)
         if status == 200:

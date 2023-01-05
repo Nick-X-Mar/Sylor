@@ -10,7 +10,6 @@ def execute_get_user_by_username(username):
 
     table = client.Table(DYNAMODB_USERS_TABLE)
     response = table.get_item(
-        TableName=DYNAMODB_USERS_TABLE,
         Key={
             'username': str(username),
         })

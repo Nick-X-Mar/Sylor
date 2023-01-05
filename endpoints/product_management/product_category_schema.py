@@ -7,60 +7,6 @@ from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource
 from config.config import DYNAMODB_CATEGORY_TABLE
 from endpoints.get_single_user import execute_get_user_by_username
-
-
-# def traverse_items(item, list_of_translation_ids, list_of_translation_names):
-#     friendly_items = []
-#     temp = {}
-#     for k, v in item.items():
-#         if k in list_of_translation_ids:
-#             k = list_of_translation_names[list_of_translation_ids.index(k)]
-#         if isinstance(v, dict):
-#             v = traverse_items(v, list_of_translation_ids, list_of_translation_names)
-#         elif isinstance(v, list):
-#             inner_list = []
-#             for inner_k in v:
-#                 if inner_k in list_of_translation_ids:
-#                     inner_list.append(list_of_translation_names[list_of_translation_ids.index(inner_k)])
-#             v = inner_list
-#         if isinstance(v, str):
-#             if v in list_of_translation_ids:
-#                 v = list_of_translation_names[list_of_translation_ids.index(v)]
-#         if k[-3:] == "_id":
-#             k = k[:-3]
-#         temp[k] = v
-#     friendly_items.append(temp)
-#     return friendly_items
-#
-#
-# def connect_ids_with_translations(headers, products, lang='el'):
-#     client, status = connect_to_dynamodb_resource()
-#     if status != 200:
-#         return func_resp(msg=client, data=[], status=status)
-#
-#     table = client.Table(DYNAMODB_TRANSLATIONS_TABLE)
-#
-#     res = table.scan()
-#     if res.get('Items') is not None and len(res['Items']) > 0:
-#         translations = res['Items']
-#     else:
-#         return func_resp(msg='Translations table does not exist', data=[], status=200)
-#
-#     list_of_translation_ids = []
-#     list_of_translation_names = []
-#     for t in translations:
-#         for k, v in t.items():
-#             if k == 'translation_id':
-#                 list_of_translation_ids.append(v)
-#                 if lang in t.keys():
-#                     list_of_translation_names.append(t[lang])
-#                 else:
-#                     list_of_translation_names.append("missing")
-#
-#     friendly_products = []
-#     for product in products:
-#         friendly_products.extend(traverse_items(product, list_of_translation_ids, list_of_translation_names))
-#     return func_resp(msg='', data=friendly_products, status=200)
 from endpoints.translations_helper import connect_ids_with_translations
 
 
@@ -109,14 +55,20 @@ def register_new_product_schema(product):
 
     table = client.Table(DYNAMODB_CATEGORY_TABLE)
     item = {
-        'schemas_key': str(uuid.uuid4()),
-        'product_name_id': product.get('product_name_id'),
-        'typologies': product.get('typologies')
+        # 'schemas_key': str(uuid.uuid4()),
+        'schemas_key': product.get('product_name'),
+        'typology': product.get('typology'),
+        'typology_1': product.get('typology_1') if product.get('typology_1') is not None else [],
+        'typology_2': product.get('typology_2') if product.get('typology_2') is not None else [],
+        'typology_3': product.get('typology_3') if product.get('typology_3') is not None else [],
+        'typology_4': product.get('typology_4') if product.get('typology_4') is not None else [],
+        'typology_5': product.get('typology_5') if product.get('typology_5') is not None else [],
+        'typology_6': product.get('typology_6') if product.get('typology_6') is not None else [],
     }
 
-    specials = product.get('specials')
-    for k, v in specials.items():
-        item[k] = v
+    # specials = product.get('specials')
+    # for k, v in specials.items():
+    #     item[k] = v
 
     try:
         table.put_item(
@@ -142,6 +94,105 @@ def register_new_product_schema(product):
         return func_resp(msg="Registration not completed.", data=[], status=400)
 
 
+def update_schema(schemas_key, body):
+    upEx = "set "
+    last = False
+    attValues = {}
+    # if body.get('product_name') is not None:
+    #     if last is True:
+    #         upEx += ","
+    #     upEx += " product_name = :product_name"
+    #     attValues[":product_name"] = body.get('product_name')
+    #     last = True
+    if body.get('typology') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology = :typology"
+        attValues[":typology"] = body.get('typology')
+        last = True
+    if body.get('typology_1') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology_1 = :typology_1"
+        attValues[":typology_1"] = body.get('typology_1')
+        last = True
+    if body.get('typology_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology_2 = :typology_2"
+        attValues[":typology_2"] = body.get('typology_2')
+        last = True
+    if body.get('typology_3') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology_3 = :typology_3"
+        attValues[":typology_3"] = body.get('typology_3')
+        last = True
+    if body.get('typology_4') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology_4 = :typology_4"
+        attValues[":typology_4"] = body.get('typology_4')
+        last = True
+    if body.get('typology_5') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology_5 = :typology_5"
+        attValues[":typology_5"] = body.get('typology_5')
+        last = True
+    if body.get('typology_6') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " typology_6 = :typology_6"
+        attValues[":typology_6"] = body.get('typology_6')
+
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    try:
+        table = client.Table(DYNAMODB_CATEGORY_TABLE)
+        response = table.update_item(
+            Key={
+                'schemas_key': schemas_key
+            },
+            UpdateExpression=upEx,
+            ExpressionAttributeValues=attValues
+        )
+        status_code = response['ResponseMetadata']['HTTPStatusCode']
+        if status_code == 200:
+            return func_resp(msg='Schema Updated.', data=[], status=status_code)
+        else:
+            return func_resp(msg=response['ResponseMetadata'], data=[], status=status_code)
+    except:
+        print(f"Update Failed.")
+        print(upEx)
+        print(attValues)
+        return func_resp(msg='Update Failed.', data=[], status=400)
+
+
+def delete_schema(schemas_key):
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+    # print(DYNAMODB_USERS_TABLE)
+    try:
+        table = client.Table(DYNAMODB_CATEGORY_TABLE)
+        response = table.delete_item(
+            Key={
+                'schemas_key': schemas_key
+            }
+        )
+        # print(response)
+        status_code = response['ResponseMetadata']['HTTPStatusCode']
+        if status_code == 200:
+            return func_resp(msg='Schema Deleted.', data=[], status=200)
+        else:
+            return func_resp(msg=response['ResponseMetadata'], data=[], status=status_code)
+    except:
+        return func_resp(msg='Deletion Failed.', data=[], status=400)
+
+
 # @token_required
 def check_request_post(headers, args):
     if args is None:
@@ -154,44 +205,56 @@ def check_request_post(headers, args):
     if not args or args is None:
         return func_resp(msg="Nothing send for insert.", data=[], status=400)
 
-    product_name_id = args.get('product_name_id')
-    specials = args.get('specials')
-    typologies = args.get('typologies')
+    product_name = args.get('product_name')
+    typology = args.get('typology')
+    typology_1 = args.get('typology_1')
+    typology_2 = args.get('typology_2')
+    typology_3 = args.get('typology_3')
+    typology_4 = args.get('typology_4')
+    typology_5 = args.get('typology_5')
+    typology_6 = args.get('typology_6')
 
-    if not specials or not typologies or product_name_id is None:
-        return func_resp(msg='Please complete all required fields.', data=[], status=400)
-
-    return func_resp(msg="", data=[], status=200)
-
-
-# @token_required
-def check_request_delete(headers, username):
-    if username is None or username == "":
-        return func_resp(msg="username was not given.", data=[], status=400)
-    return func_resp(msg="", data=[], status=200)
-
-
-# @token_required
-def check_request_put(headers, old_username, body):
-    if body is None:
-        return func_resp(msg="Nothing send for update.", data=[], status=400)
-
-    if old_username is None or old_username == "":
-        return func_resp(msg="Username was not given.", data=[], status=400)
-
-    firstName = body.get('firstName')
-    lastName = body.get('lastName')
-    # username = body.get('username')  # Cannot change Username without member_id
-    password = body.get('password')
-
-    if all(item is None for item in [firstName, lastName, password]):
+    if all(item is None for item in [product_name, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
         return func_resp(msg='Please complete at least one field.', data=[], status=400)
 
-    status, msg, data = execute_get_user_by_username(username=old_username)
-    if status == 200:
-        return func_resp(msg='', data=[], status=200)
+    return func_resp(msg="", data=[], status=200)
 
-    return func_resp(msg=msg, data=data, status=status)
+
+# @token_required
+def check_request_delete(headers, schemas_key):
+    if schemas_key is None or schemas_key == "":
+        return func_resp(msg="Schemas_key was not given.", data=[], status=400)
+    return func_resp(msg="", data=[], status=200)
+
+
+# @token_required
+def check_request_put(headers, schemas_key, args):
+    if args is None:
+        return func_resp(msg="Please complete all required fields.", data=[], status=400)
+    try:
+        args = json.loads(args)
+    except:
+        return func_resp(msg="Request body is not valid json", data=[], status=400)
+
+    if args is None:
+        return func_resp(msg="Nothing send for update.", data=[], status=400)
+
+    if schemas_key is None or schemas_key == "":
+        return func_resp(msg="Schemas_key was not given.", data=[], status=400)
+
+    # product_name = args.get('product_name')
+    typology = args.get('typology')
+    typology_1 = args.get('typology_1')
+    typology_2 = args.get('typology_2')
+    typology_3 = args.get('typology_3')
+    typology_4 = args.get('typology_4')
+    typology_5 = args.get('typology_5')
+    typology_6 = args.get('typology_6')
+
+    if all(item is None for item in [typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
+        return func_resp(msg='Please complete at least one field.', data=[], status=400)
+
+    return func_resp(msg='', data=[], status=200)
 
 
 # @token_required
@@ -218,20 +281,21 @@ def product_schema_related_methods(event, context):
             status, msg, data = register_new_product_schema(body)
         return api_resp(msg=msg, data=data, status=status)
 
-    # elif method == "PUT":
-    #     product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
-    #     body = json.loads(event.get("body"))
-    #     status, msg, data = check_request_put(headers, username, body)
-    #     if status == 200:
-    #         status, msg, data = update_user(username, body)
-    #     return api_resp(msg=msg, data=data, status=status)
-    #
-    # elif method == "DELETE":
-    #     product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
-    #     status, msg, data = check_request_delete(headers, username)
-    #     if status == 200:
-    #         status, msg, data = delete_user(username)
-    #     return api_resp(msg=msg, data=data, status=status)
+    elif method == "PUT":
+        schemas_key = event.get("queryStringParameters", {'schemas_key': None}).get("schemas_key")
+        body = event.get("body")
+        status, msg, data = check_request_put(headers, schemas_key, body)
+        if status == 200:
+            body = json.loads(body)
+            status, msg, data = update_schema(schemas_key, body)
+        return api_resp(msg=msg, data=data, status=status)
+
+    elif method == "DELETE":
+        schemas_key = event.get("queryStringParameters", {'schemas_key': None}).get("schemas_key")
+        status, msg, data = check_request_delete(headers, schemas_key)
+        if status == 200:
+            status, msg, data = delete_schema(schemas_key)
+        return api_resp(msg=msg, data=data, status=status)
 
     else:
         return api_resp(msg="Not Allowed Method", data=[], status=400)

@@ -34,6 +34,6 @@
       "time":"16/Sep/2022:15:54:10 +0000",
       "timeEpoch":1663343650697
    },
-   "body":"{\r\n\t\"title\":\"Mr\",\r\n\t\"firstName\":\"Nikos\",\r\n\t\"lastName\":\"asd\",\r\n\t\"user_role\":\"User\",\r\n\t\"username\":\"nikos1\",\r\n\t\"password\":\"123456\"\r\n}",
+   "body":"{\n    \"firstName\": \"Νικος\",\n    \"lastName\": \"Μαριανος\",\n    \"username\": \"nikos\",\n    \"password\": \"123456\"\n}",
    "isBase64Encoded":false
 }

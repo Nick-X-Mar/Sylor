@@ -4,6 +4,7 @@ from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from config.config import DYNAMODB_TRANSLATIONS_TABLE
 from databases.dbs import connect_to_dynamodb_resource
+from boto3.dynamodb.conditions import Key, Attr, And
 
 
 def get_all_translations(headers):
@@ -39,6 +40,23 @@ def get_translation_by_id(headers, translation_id):
         })
         print(f"Error: Failed to retrieve translation with data: {data}.")
         return func_resp(msg="Failed to retrieve translation.", data=[], status=400)
+
+
+def get_translation_by_type(headers, type):
+    client, status = connect_to_dynamodb_resource()
+    if status != 200:
+        return func_resp(msg=client, data=[], status=status)
+
+    table = client.Table(DYNAMODB_TRANSLATIONS_TABLE)
+    res = table.scan()
+    if res.get('Items') is not None and len(res['Items']) > 0:
+        results = []
+        for translation in res['Items']:
+            if translation.get('type') == type:
+                results.append(translation)
+        return func_resp(msg='', data=results, status=200)
+    else:
+        return func_resp(msg='', data=[], status=200)
 
 
 def register_new_translation(translations):
@@ -180,6 +198,13 @@ def translations_related_methods(event, context):
                 status, msg, data = get_translation_by_id(headers, translation_id)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="Translation_id not specified", data=[], status=400)
+        elif event.get("rawPath") == '/translations/type':
+            type = event.get("queryStringParameters", {'type': None}).get("type")
+            if type is not None and type != "":
+                # print(get_user_username(username))
+                status, msg, data = get_translation_by_type(headers, type)
+                return api_resp(msg=msg, data=data, status=status)
+            return api_resp(msg="Translation_type not specified", data=[], status=400)
         status, msg, data = get_all_translations(headers)
         return api_resp(msg=msg, data=data, status=status)
 

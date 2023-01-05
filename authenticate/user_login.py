@@ -8,7 +8,7 @@ from passlib.hash import pbkdf2_sha256
 
 
 def execute_login(username, password):
-    print(username)
+    # print(username)
     status, msg, user_data = execute_get_user_by_username(username=username)
     if status == 200:
         # print(f"Given username: {username}, password: {password}, evaluation was: {pbkdf2_sha256.verify(password, user_data.get('password'))}")
@@ -20,7 +20,7 @@ def execute_login(username, password):
             'exp': datetime.utcnow() + timedelta(seconds=config.JWT_EXP_DELTA_SECONDS)
         }
         jwt_token = jwt.encode(payload, config.JWT_SECRET, config.JWT_ALGORITHM)
-        return func_resp(msg='', data={'token': jwt_token}, status=200)
+        return func_resp(msg='', data={'username': username, 'token': jwt_token}, status=200)
     else:
         return func_resp(msg=msg, data=user_data, status=status)
 

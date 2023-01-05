@@ -84,6 +84,17 @@ provider:
       Resource:
         - { "Fn::GetAtt": [ "sylorProductGeneralSpecs", "Arn" ] }
 
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorClients", "Arn" ] }
+
 functions:
   login_be:
     handler: authenticate/user_login.loging_request_receiver
@@ -112,7 +123,7 @@ functions:
           path: /users/edit
 
   translations_management:
-    handler: endpoints/product_management/translations.translations_related_methods
+    handler: endpoints/translations_management/translations.translations_related_methods
     events:
       - httpApi:
           method: 'GET'
@@ -120,6 +131,9 @@ functions:
       - httpApi:
           method: 'GET'
           path: /translations/id
+      - httpApi:
+          method: 'GET'
+          path: /translations/type
       - httpApi:
           method: 'POST'
           path: /translations/registration
@@ -168,6 +182,24 @@ functions:
           method: 'PUT'
           path: /product_schema/edit
 
+  clients_management:
+    handler: endpoints/clients_management/clients.client_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /clients
+      - httpApi:
+          method: 'GET'
+          path: /clients/id
+      - httpApi:
+          method: 'POST'
+          path: /clients/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /clients/delete
+      - httpApi:
+          method: 'PUT'
+          path: /clients/edit
 resources:
   Resources:
     sylorUsersTable:
@@ -249,6 +281,20 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: product_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorClients:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorClients
+        AttributeDefinitions:
+          - AttributeName: client_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: client_key
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
