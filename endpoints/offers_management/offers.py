@@ -1,30 +1,27 @@
 import json
 import uuid
-from passlib.hash import pbkdf2_sha256
-from authenticate.auth import token_required
 from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
-from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
-from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
-from endpoints.get_single_user import execute_get_user_by_username
+from databases.dbs import connect_to_dynamodb_resource
+from config.config import DYNAMODB_OFFERS_TABLE
 from endpoints.translations_helper import connect_ids_with_translations
 
 
-def get_all_products(headers, fav):
+def get_all_offers(headers, fav):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
-    table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+    table = client.Table(DYNAMODB_OFFERS_TABLE)
     res = table.scan()
     if res.get('Items') is not None and len(res['Items']) > 0:
-        status, msg, data = 200, "No Favorite Products", []
+        status, msg, data = 200, "No Favorite offers", []
         if fav:
             results = []
-            for product in res['Items']:
-                # print(product)
-                if product.get('fav') is True:
-                    results.append(product)
+            for offer in res['Items']:
+                # print(offer)
+                if offer.get('fav') is True:
+                    results.append(offer)
                     status, msg, data = connect_ids_with_translations(headers, results)
         else:
             status, msg, data = connect_ids_with_translations(headers, res['Items'])
@@ -33,66 +30,94 @@ def get_all_products(headers, fav):
         return func_resp(msg='', data=[], status=200)
 
 
-def get_product_by_id(headers, product_key):
+def get_offer_by_id(headers, offer_key):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
-    table = client.Table(DYNAMODB_PRODUCTS_TABLE)
-    # print(product_key)
+    table = client.Table(DYNAMODB_OFFERS_TABLE)
     try:
-        response = table.get_item(Key={'product_key': product_key})
+        response = table.get_item(Key={'offer_key': offer_key})
     except:
         data = json.dumps({
-            "product_key": product_key
+            "offer_key": offer_key
         })
-        print(f"Error: Failed to retrieve product with data: {data}.")
-        return func_resp(msg="Failed to retrieve product.", data=[], status=400)
+        print(f"Error: Failed to retrieve offer with data: {data}.")
+        return func_resp(msg="Failed to retrieve offer.", data=[], status=400)
 
     # print(response.get('Item'))
     if response.get('Item') is None:
-        return func_resp(msg=f"Product with product_key:{product_key} not found.", data=[], status=404)
+        return func_resp(msg=f"offer with offer_key:{offer_key} not found.", data=[], status=404)
     else:
         status, msg, data = connect_ids_with_translations(headers, [response['Item']])
         return func_resp(msg=msg, data=data, status=status)
 
 
-def register_new_product(product):
+def register_new_offer(offer):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
-    table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+    table = client.Table(DYNAMODB_OFFERS_TABLE)
     item = {
-        'product_key': str(uuid.uuid4()),
-        'product_name': product.get('product_name'),
-        'img_url': product.get('img'),
-        'typology_id': product.get('typology_id'),
-        'typology_1': product.get('typology_1'),
-        'typology_2': product.get('typology_2'),
-        'typology_3': product.get('typology_3'),
-        'typology_4': product.get('typology_4'),
-        'typology_5': product.get('typology_5'),
-        'typology_6': product.get('typology_6'),
-        'fav': product.get('fav') if product.get('fav') is not None else "",
+        'offer_key': str(uuid.uuid4()),
+        'offer_id': offer.get('offer_id'),
+        'offer_date': offer.get('offer_date'),
+        'customer': offer.get('customer'),
+        'offer_constructor': offer.get('offer_constructor'),
+        'username': offer.get('user'),
+        'charge': str(offer.get('charge')),
+        'discount': str(offer.get('discount')),
+        'offer_amount': str(offer.get('offer_amount')),
+        'info_el_1': offer.get('info_el_1'),
+        'fpa': str(offer.get('fpa')),
+        'to': offer.get('to'),
+        'info_el_2': offer.get('info_el_2'),
+        'info_el_3': offer.get('info_el_3'),
+        'info_en_1': offer.get('info_en_1'),
+        'info_en_2': offer.get('info_en_2'),
+        'info_en_3': offer.get('info_en_3'),
+        'info_it_1': offer.get('info_it_1'),
+        'info_it_2': offer.get('info_it_2'),
+        'info_it_3': offer.get('info_it_3'),
+        # 'costs': offer.get('costs'),
+        # 'charges': offer.get('charges'),
     }
+    costs_desc = []
+    costs_amount = []
+    for cost in offer.get('costs'):
+        costs_desc.append(cost.get('desc'))
+        costs_amount.append(str(cost.get('value')))
+    item["costs_desc"] = costs_desc
+    item["costs_amount"] = costs_amount
+
+    # print(item)
+    # print(item["costs_amount"])
+    charges_desc = []
+    charges_amount = []
+    for charge in offer.get('charges'):
+        charges_desc.append(charge.get('desc'))
+        charges_amount.append(str(charge.get('value')))
+    item["charges_desc"] = charges_desc
+    item["charges_amount"] = charges_amount
+
     try:
         table.put_item(
             Item=item,
-            ConditionExpression='attribute_not_exists(product_key)'
+            ConditionExpression='attribute_not_exists(offer_key)'
         )
-        return func_resp(msg="Product Registered", data=[], status=200)
+        return func_resp(msg="offer Registered", data=[], status=200)
     except exceptions.ParamValidationError as error:
         print('The parameters you provided are incorrect: {}'.format(error))
         return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
 
     except exceptions.ClientError as e:
-        print(f"Failed to register product with error: {str(e.response.get('Error'))}")
+        print(f"Failed to register offer with error: {str(e.response.get('Error'))}")
         msg = e.response.get('Error', {"Message": None}).get('Message')
         if msg is None:
-            msg = "Failed to register product."
+            msg = "Failed to register offer."
         else:
-            msg = "product_key does not exist"
+            msg = "offer_key does not exist"
         return func_resp(msg=msg, data=[], status=400)
 
     except:
@@ -100,37 +125,37 @@ def register_new_product(product):
         return func_resp(msg="Registration not completed.", data=[], status=400)
 
 
-def delete_product(product_key):
+def delete_offer(offer_key):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
     # print(DYNAMODB_USERS_TABLE)
     try:
-        table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+        table = client.Table(DYNAMODB_OFFERS_TABLE)
         response = table.delete_item(
             Key={
-                'product_key': product_key
+                'offer_key': offer_key
             }
         )
         # print(response)
         status_code = response['ResponseMetadata']['HTTPStatusCode']
         if status_code == 200:
-            return func_resp(msg='Product Deleted.', data=[], status=200)
+            return func_resp(msg='offer Deleted.', data=[], status=200)
         else:
             return func_resp(msg=response['ResponseMetadata'], data=[], status=status_code)
     except:
         return func_resp(msg='Deletion Failed.', data=[], status=400)
 
 
-def update_product(product_key, body):
+def update_offer(offer_key, body):
     upEx = "set "
     last = False
     attValues = {}
-    if body.get('product_name') is not None:
+    if body.get('offer_name') is not None:
         if last is True:
             upEx += ","
-        upEx += " product_name = :product_name"
-        attValues[":product_name"] = body.get('product_name')
+        upEx += " offer_name = :offer_name"
+        attValues[":offer_name"] = body.get('offer_name')
         last = True
     if body.get('img') is not None:
         if last is True:
@@ -185,17 +210,17 @@ def update_product(product_key, body):
         return func_resp(msg=client, data=[], status=status)
 
     try:
-        table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+        table = client.Table(DYNAMODB_OFFERS_TABLE)
         response = table.update_item(
             Key={
-                'product_key': product_key
+                'offer_key': offer_key
             },
             UpdateExpression=upEx,
             ExpressionAttributeValues=attValues
         )
         status_code = response['ResponseMetadata']['HTTPStatusCode']
         if status_code == 200:
-            return func_resp(msg='Product Updated.', data=[], status=status_code)
+            return func_resp(msg='offer Updated.', data=[], status=status_code)
         else:
             return func_resp(msg=response['ResponseMetadata'], data=[], status=status_code)
     except:
@@ -217,25 +242,18 @@ def check_request_post(headers, args):
     if not args or args is None:
         return func_resp(msg="Nothing send for insert.", data=[], status=400)
 
-    product_name = args.get('product_name')
-    img = args.get('img')
-    typology = args.get('typology')
-
-    if all(item is None for item in [product_name, img, typology]):
-        return func_resp(msg='Please complete all required fields.', data=[], status=400)
-
     return func_resp(msg="", data=[], status=200)
 
 
 # @token_required
-def check_request_delete(headers, product_key):
-    if product_key is None or product_key == "":
-        return func_resp(msg="product_key was not given.", data=[], status=400)
+def check_request_delete(headers, offer_key):
+    if offer_key is None or offer_key == "":
+        return func_resp(msg="offer_key was not given.", data=[], status=400)
     return func_resp(msg="", data=[], status=200)
 
 
 # @token_required
-def check_request_put(headers, product_key, args):
+def check_request_put(headers, offer_key, args):
     if args is None:
         return func_resp(msg="Please complete all required fields.", data=[], status=400)
     try:
@@ -246,10 +264,10 @@ def check_request_put(headers, product_key, args):
     if args is None:
         return func_resp(msg="Nothing send for update.", data=[], status=400)
 
-    if product_key is None or product_key == "":
-        return func_resp(msg="product_key was not given.", data=[], status=400)
+    if offer_key is None or offer_key == "":
+        return func_resp(msg="offer_key was not given.", data=[], status=400)
 
-    product_name = args.get('product_name')
+    offer_name = args.get('offer_name')
     img = args.get('img')
     typology = args.get('typology')
     typology_1 = args.get('typology_1')
@@ -259,27 +277,27 @@ def check_request_put(headers, product_key, args):
     typology_5 = args.get('typology_5')
     typology_6 = args.get('typology_6')
 
-    if all(item is None for item in [product_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
+    if all(item is None for item in [offer_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
         return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
     return func_resp(msg="", data=[], status=200)
 
 
 # @token_required
-def product_related_methods(event, context):
+def offer_related_methods(event, context):
     print(event)
     method = event.get("requestContext").get("http").get("method")
     # print(method)
     headers = event.get('headers')
     if method == "GET":
-        if event.get("rawPath") == '/products/id':
-            product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
-            if product_key is not None and product_key != "":
-                status, msg, data = get_product_by_id(headers, product_key)
+        if event.get("rawPath") == '/offers/id':
+            offer_key = event.get("queryStringParameters", {'offer_key': None}).get("offer_key")
+            if offer_key is not None and offer_key != "":
+                status, msg, data = get_offer_by_id(headers, offer_key)
                 return api_resp(msg=msg, data=data, status=status)
-            return api_resp(msg="Product_key not specified", data=[], status=400)
+            return api_resp(msg="offer_key not specified", data=[], status=400)
         fav = event.get("queryStringParameters", {'fav': None}).get("fav")
-        status, msg, data = get_all_products(headers, fav)
+        status, msg, data = get_all_offers(headers, fav)
         return api_resp(msg=msg, data=data, status=status)
 
     if method == "POST":
@@ -287,23 +305,23 @@ def product_related_methods(event, context):
         status, msg, data = check_request_post(headers, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = register_new_product(body)
+            status, msg, data = register_new_offer(body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "PUT":
-        product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
+        offer_key = event.get("queryStringParameters", {'offer_key': None}).get("offer_key")
         body = event.get("body")
-        status, msg, data = check_request_put(headers, product_key, body)
+        status, msg, data = check_request_put(headers, offer_key, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = update_product(product_key, body)
+            status, msg, data = update_offer(offer_key, body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "DELETE":
-        product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
-        status, msg, data = check_request_delete(headers, product_key)
+        offer_key = event.get("queryStringParameters", {'offer_key': None}).get("offer_key")
+        status, msg, data = check_request_delete(headers, offer_key)
         if status == 200:
-            status, msg, data = delete_product(product_key)
+            status, msg, data = delete_offer(offer_key)
         return api_resp(msg=msg, data=data, status=status)
 
     else:

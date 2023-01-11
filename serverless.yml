@@ -95,6 +95,28 @@ provider:
       Resource:
         - { "Fn::GetAtt": [ "sylorClients", "Arn" ] }
 
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorOffers", "Arn" ] }
+
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorOffersProduct", "Arn" ] }
+
 functions:
   login_be:
     handler: authenticate/user_login.loging_request_receiver
@@ -200,6 +222,45 @@ functions:
       - httpApi:
           method: 'PUT'
           path: /clients/edit
+
+  offers_management:
+    handler: endpoints/offers_management/offers.offer_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /offers
+      - httpApi:
+          method: 'GET'
+          path: /offers/id
+      - httpApi:
+          method: 'POST'
+          path: /offers/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /offers/delete
+      - httpApi:
+          method: 'PUT'
+          path: /offers/edit
+
+  offers_product_management:
+    handler: endpoints/offers_product_management/offers_product.offers_product_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /offers_product
+      - httpApi:
+          method: 'GET'
+          path: /offers_product/id
+      - httpApi:
+          method: 'POST'
+          path: /offers_product/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /offers_product/delete
+      - httpApi:
+          method: 'PUT'
+          path: /offers_product/edit
+
 resources:
   Resources:
     sylorUsersTable:
@@ -299,3 +360,32 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    sylorOffers:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorOffers
+        AttributeDefinitions:
+          - AttributeName: offer_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: offer_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    sylorOffersProduct:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorOffersProduct
+        AttributeDefinitions:
+          - AttributeName: offer_product_key
+            AttributeType: S
+        KeySchema:
+          - AttributeName: offer_product_key
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+

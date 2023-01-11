@@ -7,6 +7,8 @@ DYNAMODB_SUBCATEGORY_TABLE = "sylorProductSubCategory"
 DYNAMODB_PRODUCT_SPECIFICS_TABLE = "sylorProductSpecifics"
 DYNAMODB_PRODUCT_GENERAL_SPECS_TABLE = "sylorProductGeneralSpecs"
 DYNAMODB_CLIENTS_TABLE = "sylorClients"
+DYNAMODB_OFFERS_TABLE = "sylorOffers"
+DYNAMODB_OFFERS_PRODUCT_TABLE = "sylorOffersProduct"
 
 # JWT
 JWT_SECRET = 'rover1-qualifier-unplowed-rebalance-wobble'
