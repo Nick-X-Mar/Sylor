@@ -7,7 +7,7 @@ from config.config import DYNAMODB_OFFERS_TABLE
 from endpoints.translations_helper import connect_ids_with_translations
 
 
-def get_all_offers(headers, fav):
+def get_all_offers(headers):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -15,17 +15,8 @@ def get_all_offers(headers, fav):
     table = client.Table(DYNAMODB_OFFERS_TABLE)
     res = table.scan()
     if res.get('Items') is not None and len(res['Items']) > 0:
-        status, msg, data = 200, "No Favorite offers", []
-        if fav:
-            results = []
-            for offer in res['Items']:
-                # print(offer)
-                if offer.get('fav') is True:
-                    results.append(offer)
-                    status, msg, data = connect_ids_with_translations(headers, results)
-        else:
-            status, msg, data = connect_ids_with_translations(headers, res['Items'])
-        return func_resp(msg=msg, data=data, status=status)
+        # status, msg, data = connect_ids_with_translations(headers, res['Items'])
+        return func_resp(msg="", data=res['Items'], status=200)
     else:
         return func_resp(msg='', data=[], status=200)
 
@@ -49,8 +40,8 @@ def get_offer_by_id(headers, offer_key):
     if response.get('Item') is None:
         return func_resp(msg=f"offer with offer_key:{offer_key} not found.", data=[], status=404)
     else:
-        status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg=msg, data=data, status=status)
+        # status, msg, data = connect_ids_with_translations(headers, [response['Item']])
+        return func_resp(msg="", data=[response['Item']], status=200)
 
 
 def register_new_offer(offer):
@@ -61,17 +52,17 @@ def register_new_offer(offer):
     table = client.Table(DYNAMODB_OFFERS_TABLE)
     item = {
         'offer_key': str(uuid.uuid4()),
-        'offer_id': offer.get('offer_id'),
+        'offer_id': str(offer.get('offer_id')),
         'offer_date': offer.get('offer_date'),
         'customer': offer.get('customer'),
         'offer_constructor': offer.get('offer_constructor'),
-        'username': offer.get('user'),
+        'username': offer.get('username'),
         'charge': str(offer.get('charge')),
         'discount': str(offer.get('discount')),
         'offer_amount': str(offer.get('offer_amount')),
-        'info_el_1': offer.get('info_el_1'),
         'fpa': str(offer.get('fpa')),
-        'to': offer.get('to'),
+        'offer_to': offer.get('offer_to'),
+        'info_el_1': offer.get('info_el_1'),
         'info_el_2': offer.get('info_el_2'),
         'info_el_3': offer.get('info_el_3'),
         'info_en_1': offer.get('info_en_1'),
@@ -151,59 +142,151 @@ def update_offer(offer_key, body):
     upEx = "set "
     last = False
     attValues = {}
-    if body.get('offer_name') is not None:
+    if body.get('offer_id') is not None:
         if last is True:
             upEx += ","
-        upEx += " offer_name = :offer_name"
-        attValues[":offer_name"] = body.get('offer_name')
+        upEx += " offer_id = :offer_id"
+        attValues[":offer_id"] = str(body.get('offer_id'))
         last = True
-    if body.get('img') is not None:
+    if body.get('offer_date') is not None:
         if last is True:
             upEx += ","
-        upEx += " img = :img"
-        attValues[":img"] = body.get('img')
+        upEx += " offer_date = :offer_date"
+        attValues[":offer_date"] = body.get('offer_date')
         last = True
-    if body.get('typology') is not None:
+    if body.get('customer') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology = :typology"
-        attValues[":typology"] = body.get('typology')
+        upEx += " customer = :customer"
+        attValues[":customer"] = body.get('customer')
         last = True
-    if body.get('typology_1') is not None:
+    if body.get('offer_constructor') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_1 = :typology_1"
-        attValues[":typology_1"] = body.get('typology_1')
+        upEx += " offer_constructor = :offer_constructor"
+        attValues[":offer_constructor"] = body.get('offer_constructor')
         last = True
-    if body.get('typology_2') is not None:
+    if body.get('username') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_2 = :typology_2"
-        attValues[":typology_2"] = body.get('typology_2')
+        upEx += " username = :username"
+        attValues[":username"] = body.get('username')
         last = True
-    if body.get('typology_3') is not None:
+    if body.get('charge') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_3 = :typology_3"
-        attValues[":typology_3"] = body.get('typology_3')
+        upEx += " charge = :charge"
+        attValues[":charge"] = str(body.get('charge'))
         last = True
-    if body.get('typology_4') is not None:
+    if body.get('discount') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_4 = :typology_4"
-        attValues[":typology_4"] = body.get('typology_4')
+        upEx += " discount = :discount"
+        attValues[":discount"] = str(body.get('discount'))
         last = True
-    if body.get('typology_5') is not None:
+    if body.get('offer_amount') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_5 = :typology_5"
-        attValues[":typology_5"] = body.get('typology_5')
+        upEx += " offer_amount = :offer_amount"
+        attValues[":offer_amount"] = str(body.get('offer_amount'))
         last = True
-    if body.get('typology_6') is not None:
+    if body.get('fpa') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_6 = :typology_6"
-        attValues[":typology_6"] = body.get('typology_6')
+        upEx += " fpa = :fpa"
+        attValues[":fpa"] = str(body.get('fpa'))
+        last = True
+    if body.get('offer_to') is not None:
+        # print(body.get('to'))
+        if last is True:
+            upEx += ","
+        upEx += " offer_to = :offer_to"
+        attValues[":offer_to"] = body.get('offer_to')
+        last = True
+        # print(upEx)
+        # print(attValues)
+    if body.get('info_el_1') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_el_1 = :info_el_1"
+        attValues[":info_el_1"] = body.get('info_el_1')
+        last = True
+    if body.get('info_el_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_el_2 = :info_el_2"
+        attValues[":info_el_2"] = body.get('info_el_2')
+        last = True
+    if body.get('info_el_3') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_el_3 = :info_el_3"
+        attValues[":info_el_3"] = body.get('info_el_3')
+        last = True
+    if body.get('info_en_1') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_en_1 = :info_en_1"
+        attValues[":info_en_1"] = body.get('info_en_1')
+        last = True
+    if body.get('info_en_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_en_2 = :info_en_2"
+        attValues[":info_en_2"] = body.get('info_en_2')
+        last = True
+    if body.get('info_en_3') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_en_3 = :info_en_3"
+        attValues[":info_en_3"] = body.get('info_en_3')
+        last = True
+    if body.get('info_it_1') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_it_1 = :info_it_1"
+        attValues[":info_it_1"] = body.get('info_it_1')
+        last = True
+    if body.get('info_it_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_it_2 = :info_it_2"
+        attValues[":info_it_2"] = body.get('info_it_2')
+        last = True
+    if body.get('info_it_3') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " info_it_3 = :info_it_3"
+        attValues[":info_it_3"] = body.get('info_it_3')
+        last = True
+    if body.get('costs') is not None:
+        costs_desc = []
+        costs_amount = []
+        for cost in body.get('costs'):
+            costs_desc.append(cost.get('desc'))
+            costs_amount.append(str(cost.get('value')))
+        if last is True:
+            upEx += ","
+        upEx += " costs_desc = :costs_desc"
+        attValues[":costs_desc"] = costs_desc
+        upEx += ","
+        upEx += " costs_amount = :costs_amount"
+        attValues[":costs_amount"] = costs_amount
+        last = True
+    if body.get('charges') is not None:
+        charges_desc = []
+        charges_amount = []
+        for charge in body.get('charges'):
+            charges_desc.append(charge.get('desc'))
+            charges_amount.append(str(charge.get('value')))
+        if last is True:
+            upEx += ","
+        upEx += " charges_desc = :charges_desc"
+        attValues[":charges_desc"] = charges_desc
+        upEx += ","
+        upEx += " charges_amount = :charges_amount"
+        attValues[":charges_amount"] = charges_amount
+        last = True
 
     client, status = connect_to_dynamodb_resource()
     if status != 200:
@@ -267,18 +350,18 @@ def check_request_put(headers, offer_key, args):
     if offer_key is None or offer_key == "":
         return func_resp(msg="offer_key was not given.", data=[], status=400)
 
-    offer_name = args.get('offer_name')
-    img = args.get('img')
-    typology = args.get('typology')
-    typology_1 = args.get('typology_1')
-    typology_2 = args.get('typology_2')
-    typology_3 = args.get('typology_3')
-    typology_4 = args.get('typology_4')
-    typology_5 = args.get('typology_5')
-    typology_6 = args.get('typology_6')
-
-    if all(item is None for item in [offer_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
-        return func_resp(msg='Please complete all required fields.', data=[], status=400)
+    # offer_name = args.get('offer_name')
+    # img = args.get('img')
+    # typology = args.get('typology')
+    # typology_1 = args.get('typology_1')
+    # typology_2 = args.get('typology_2')
+    # typology_3 = args.get('typology_3')
+    # typology_4 = args.get('typology_4')
+    # typology_5 = args.get('typology_5')
+    # typology_6 = args.get('typology_6')
+    #
+    # if all(item is None for item in [offer_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
+    #     return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
     return func_resp(msg="", data=[], status=200)
 
@@ -296,8 +379,7 @@ def offer_related_methods(event, context):
                 status, msg, data = get_offer_by_id(headers, offer_key)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="offer_key not specified", data=[], status=400)
-        fav = event.get("queryStringParameters", {'fav': None}).get("fav")
-        status, msg, data = get_all_offers(headers, fav)
+        status, msg, data = get_all_offers(headers)
         return api_resp(msg=msg, data=data, status=status)
 
     if method == "POST":

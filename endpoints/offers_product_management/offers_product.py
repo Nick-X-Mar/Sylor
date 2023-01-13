@@ -7,7 +7,7 @@ from config.config import DYNAMODB_OFFERS_PRODUCT_TABLE
 from endpoints.translations_helper import connect_ids_with_translations
 
 
-def get_all_offers(headers, fav):
+def get_all_offers(headers):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -15,16 +15,7 @@ def get_all_offers(headers, fav):
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     res = table.scan()
     if res.get('Items') is not None and len(res['Items']) > 0:
-        status, msg, data = 200, "No Favorite offers", []
-        if fav:
-            results = []
-            for offer_product in res['Items']:
-                # print(offer_product)
-                if offer_product.get('fav') is True:
-                    results.append(offer_product)
-                    status, msg, data = connect_ids_with_translations(headers, results)
-        else:
-            status, msg, data = connect_ids_with_translations(headers, res['Items'])
+        status, msg, data = connect_ids_with_translations(headers, res['Items'])
         return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
@@ -61,15 +52,15 @@ def register_new_offer_product(offer_product):
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     item = {
         'offer_product_key': str(uuid.uuid4()),
-        'offer': offer_product.get('offer'),
-        'product': offer_product.get('product'),
-        'qountity': int(offer_product.get('qountity')),
+        'offer': str(offer_product.get('offer')),
+        'product': str(offer_product.get('product')),
+        'quantity': str(offer_product.get('quantity')),
         'x': str(offer_product.get('x')),
         'y': str(offer_product.get('y')),
         'z': str(offer_product.get('z')),
         'unit_amount': str(offer_product.get('unit_amount')),
-        'offer_position': int(offer_product.get('offer_position')),
-        'total_amount': str(float(offer_product.get('unit_amount')) * int(offer_product.get('qountity')))
+        'offer_position': str(offer_product.get('offer_position')),
+        'total_amount': str(float(offer_product.get('unit_amount')) * int(offer_product.get('quantity')))
     }
     try:
         table.put_item(
@@ -237,18 +228,18 @@ def check_request_put(headers, offer_product_key, args):
     if offer_product_key is None or offer_product_key == "":
         return func_resp(msg="offer_product_key was not given.", data=[], status=400)
 
-    offer_name = args.get('offer_name')
-    img = args.get('img')
-    typology = args.get('typology')
-    typology_1 = args.get('typology_1')
-    typology_2 = args.get('typology_2')
-    typology_3 = args.get('typology_3')
-    typology_4 = args.get('typology_4')
-    typology_5 = args.get('typology_5')
-    typology_6 = args.get('typology_6')
-
-    if all(item is None for item in [offer_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
-        return func_resp(msg='Please complete all required fields.', data=[], status=400)
+    # offer_name = args.get('offer_name')
+    # img = args.get('img')
+    # typology = args.get('typology')
+    # typology_1 = args.get('typology_1')
+    # typology_2 = args.get('typology_2')
+    # typology_3 = args.get('typology_3')
+    # typology_4 = args.get('typology_4')
+    # typology_5 = args.get('typology_5')
+    # typology_6 = args.get('typology_6')
+    #
+    # if all(item is None for item in [offer_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
+    #     return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
     return func_resp(msg="", data=[], status=200)
 
@@ -266,8 +257,8 @@ def offers_product_related_methods(event, context):
                 status, msg, data = get_offer_by_id(headers, offer_product_key)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="offer_product_key not specified", data=[], status=400)
-        fav = event.get("queryStringParameters", {'fav': None}).get("fav")
-        status, msg, data = get_all_offers(headers, fav)
+        status, msg, data = get_all_offers(headers)
+        print(data)
         return api_resp(msg=msg, data=data, status=status)
 
     if method == "POST":
