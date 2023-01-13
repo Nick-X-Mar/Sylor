@@ -34,6 +34,6 @@
       "time":"16/Nov/2022:17:22:52 +0000",
       "timeEpoch":1668619372705
    },
-   "body":"{\r\n    \"product_name_id\": \"4481bce4-db7f-40db-b5d8-c01f477d4233\",\r\n    \"img\": \"url/url\",\r\n    \"typology_id\": \"c15bee0a-84c3-4711-a34a-8825eb74c89d\",\r\n    \"specials\": [\r\n        {\r\n            \"special_title_id\": \"7e31af72-7522-4dfa-b55a-1e20dd33ef0c\",\r\n            \"special_id\": \"335bdcc6-bf43-4489-b780-9f994bc7c5e5\"\r\n        },\r\n        {\r\n            \"special_title_id\": \"fe69dcdb-6f69-48ca-8713-538e6657acb0\",\r\n            \"special_id\": \"0d9b5af8-be79-47ec-9d25-e8a11511b882\"\r\n        }\r\n    ]\r\n}",
+   "body":"{\n    \"product_name\": \"bf30a24b-8a65-40d4-8aae-1b2d22ce6dea\",\n    \"img\": \"url/url\",\n    \"typology\": \"8ef1ae8e-bc09-4b8e-bc68-b022d5e81cb8\",\n    \"typology_1\": \"d6203c71-3797-40fa-9dd7-2627afff9f51\",\n    \"typology_2\": \"0d9b5af8-be79-47ec-9d25-e8a11511b882\",\n    \"typology_3\": \"d4ab36a6-d4e6-4666-8334-d7c33541d7b8\",\n    \"typology_4\": \"9a187e7a-d643-47e6-a634-4cb9986e4b1b\",\n    \"fav\": true,\n    \"offer\": \"3875192f-70ab-44a6-a4e9-4f3eac0f3162\",\n    \"offer_position\": 2,\n    \"quantity\": 3,\n    \"unit_amount\": 210\n}",
    "isBase64Encoded":false
 }

@@ -7,7 +7,7 @@ from config.config import DYNAMODB_OFFERS_PRODUCT_TABLE
 from endpoints.translations_helper import connect_ids_with_translations
 
 
-def get_all_offers(headers):
+def get_all_offers(headers, offer_id):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -15,7 +15,17 @@ def get_all_offers(headers):
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     res = table.scan()
     if res.get('Items') is not None and len(res['Items']) > 0:
-        status, msg, data = connect_ids_with_translations(headers, res['Items'])
+        status, msg, data = 200, "No products for this offer yet", []
+        if offer_id is not None:
+            results = []
+            for product in res['Items']:
+                # print(product)
+                if product.get('offer') == offer_id:
+                    results.append(product)
+                    status, msg, data = connect_ids_with_translations(headers, results)
+
+        else:
+            status, msg, data = connect_ids_with_translations(headers, res['Items'])
         return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
@@ -41,10 +51,10 @@ def get_offer_by_id(headers, offer_product_key):
         return func_resp(msg=f"offer_product with offer_product_key:{offer_product_key} not found.", data=[], status=404)
     else:
         status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg=msg, data=data, status=status)
+        return func_resp(msg=msg, data=data[0], status=status)
 
 
-def register_new_offer_product(offer_product):
+def register_new_offer_product(headers, offer_product):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -86,7 +96,7 @@ def register_new_offer_product(offer_product):
         return func_resp(msg="Registration not completed.", data=[], status=400)
 
 
-def delete_offer(offer_product_key):
+def delete_offer(headers, offer_product_key):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -108,7 +118,7 @@ def delete_offer(offer_product_key):
         return func_resp(msg='Deletion Failed.', data=[], status=400)
 
 
-def update_offer(offer_product_key, body):
+def update_offer_product(headers, offer_product_key, body):
     upEx = "set "
     last = False
     attValues = {}
@@ -203,6 +213,11 @@ def check_request_post(headers, args):
     if not args or args is None:
         return func_resp(msg="Nothing send for insert.", data=[], status=400)
 
+    product = args.get('product')
+    print(product)
+    if all(item is None for item in [product]):
+        return func_resp(msg='Offer is a required field.', data=[], status=400)
+
     return func_resp(msg="", data=[], status=200)
 
 
@@ -257,7 +272,9 @@ def offers_product_related_methods(event, context):
                 status, msg, data = get_offer_by_id(headers, offer_product_key)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="offer_product_key not specified", data=[], status=400)
-        status, msg, data = get_all_offers(headers)
+
+        offer_id = event.get("queryStringParameters", {'offer_id': None}).get("offer_id")
+        status, msg, data = get_all_offers(headers, offer_id)
         print(data)
         return api_resp(msg=msg, data=data, status=status)
 
@@ -266,7 +283,7 @@ def offers_product_related_methods(event, context):
         status, msg, data = check_request_post(headers, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = register_new_offer_product(body)
+            status, msg, data = register_new_offer_product(headers, body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "PUT":
@@ -275,7 +292,7 @@ def offers_product_related_methods(event, context):
         status, msg, data = check_request_put(headers, offer_product_key, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = update_offer(offer_product_key, body)
+            status, msg, data = update_offer_product(offer_product_key, body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "DELETE":

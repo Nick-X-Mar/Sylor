@@ -41,7 +41,7 @@ def get_offer_by_id(headers, offer_key):
         return func_resp(msg=f"offer with offer_key:{offer_key} not found.", data=[], status=404)
     else:
         # status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg="", data=[response['Item']], status=200)
+        return func_resp(msg="", data=response['Item'], status=200)
 
 
 def register_new_offer(offer):

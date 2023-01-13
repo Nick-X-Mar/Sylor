@@ -7,6 +7,7 @@ from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
 from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
 from endpoints.get_single_user import execute_get_user_by_username
+from endpoints.offers_product_management.offers_product import register_new_offer_product
 from endpoints.translations_helper import connect_ids_with_translations
 
 
@@ -54,13 +55,13 @@ def get_product_by_id(headers, product_key):
         return func_resp(msg=f"Product with product_key:{product_key} not found.", data=[], status=404)
     else:
         status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg=msg, data=data, status=status)
+        return func_resp(msg=msg, data=data[0], status=status)
 
 
-def register_new_product(product):
+def _create_product(headers, product):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
-        return func_resp(msg=client, data=[], status=status)
+        return func_resp(msg=client, data=[], status=status), None
 
     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
     item = {
@@ -74,17 +75,19 @@ def register_new_product(product):
         'typology_4': product.get('typology_4'),
         'typology_5': product.get('typology_5'),
         'typology_6': product.get('typology_6'),
-        'fav': product.get('fav') if product.get('fav') is not None else "",
+        'fav': product.get('fav') if product.get('fav') is not None else False,
     }
     try:
         table.put_item(
             Item=item,
             ConditionExpression='attribute_not_exists(product_key)'
         )
-        return func_resp(msg="Product Registered", data=[], status=200)
+        product['product'] = item.get('product_key')
+        return func_resp(msg="Product Registered", data=[], status=200), product
+
     except exceptions.ParamValidationError as error:
         print('The parameters you provided are incorrect: {}'.format(error))
-        return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
+        return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400), None
 
     except exceptions.ClientError as e:
         print(f"Failed to register product with error: {str(e.response.get('Error'))}")
@@ -93,14 +96,23 @@ def register_new_product(product):
             msg = "Failed to register product."
         else:
             msg = "product_key does not exist"
-        return func_resp(msg=msg, data=[], status=400)
+        return func_resp(msg=msg, data=[], status=400), None
 
     except:
         print(f"Tried to store item: {item}")
-        return func_resp(msg="Registration not completed.", data=[], status=400)
+        return func_resp(msg="Registration not completed.", data=[], status=400), None
 
 
-def delete_product(product_key):
+def register_new_product(headers, product):
+    # Not an existing product
+    if product.get('product') is None:
+        (status, msg, data), product = _create_product(headers, product)
+        if status != 200:
+            return func_resp(msg=msg, data=data, status=status)
+    return register_new_offer_product(headers, product)
+
+
+def delete_product(headers, product_key):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -122,7 +134,11 @@ def delete_product(product_key):
         return func_resp(msg='Deletion Failed.', data=[], status=400)
 
 
-def update_product(product_key, body):
+def update_product(headers, product_key, body):
+    status, msg, data = get_product_by_id(headers, product_key)
+    if data.get('fav') is True or data.get('fav') == "true":
+        return func_resp(msg='Cannot update favorites.', data=[], status=400)
+
     upEx = "set "
     last = False
     attValues = {}
@@ -217,12 +233,10 @@ def check_request_post(headers, args):
     if not args or args is None:
         return func_resp(msg="Nothing send for insert.", data=[], status=400)
 
-    product_name = args.get('product_name')
-    img = args.get('img')
-    typology = args.get('typology')
+    offer = args.get('offer')
 
-    if all(item is None for item in [product_name, img, typology]):
-        return func_resp(msg='Please complete all required fields.', data=[], status=400)
+    if all(item is None for item in [offer]):
+        return func_resp(msg='Offer is a required field.', data=[], status=400)
 
     return func_resp(msg="", data=[], status=200)
 
@@ -262,6 +276,9 @@ def check_request_put(headers, product_key, args):
     if all(item is None for item in [product_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
         return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
+    # if args.get('fav') is True or args.get('fav') == "true":
+    #     return func_resp(msg='Cannot update a favorite product', data=[], status=400)
+
     return func_resp(msg="", data=[], status=200)
 
 
@@ -287,7 +304,7 @@ def product_related_methods(event, context):
         status, msg, data = check_request_post(headers, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = register_new_product(body)
+            status, msg, data = register_new_product(headers, body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "PUT":
@@ -296,14 +313,14 @@ def product_related_methods(event, context):
         status, msg, data = check_request_put(headers, product_key, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = update_product(product_key, body)
+            status, msg, data = update_product(headers, product_key, body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "DELETE":
         product_key = event.get("queryStringParameters", {'product_key': None}).get("product_key")
         status, msg, data = check_request_delete(headers, product_key)
         if status == 200:
-            status, msg, data = delete_product(product_key)
+            status, msg, data = delete_product(headers, product_key)
         return api_resp(msg=msg, data=data, status=status)
 
     else:

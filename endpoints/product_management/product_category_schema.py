@@ -45,7 +45,7 @@ def get_product_by_id(headers, schemas_key):
         return func_resp(msg=f"Product with schemas_key:{schemas_key} not found.", data=[], status=404)
     else:
         status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg=msg, data=data, status=status)
+        return func_resp(msg=msg, data=data[0], status=status)
 
 
 def register_new_product_schema(product):
