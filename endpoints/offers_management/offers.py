@@ -74,30 +74,32 @@ def register_new_offer(offer):
         # 'costs': offer.get('costs'),
         # 'charges': offer.get('charges'),
     }
-    costs_desc = []
-    costs_amount = []
-    for cost in offer.get('costs'):
-        costs_desc.append(cost.get('desc'))
-        costs_amount.append(str(cost.get('value')))
-    item["costs_desc"] = costs_desc
-    item["costs_amount"] = costs_amount
+    if offer.get('costs'):
+        costs_desc = []
+        costs_amount = []
+        for cost in offer.get('costs'):
+            costs_desc.append(cost.get('desc'))
+            costs_amount.append(str(cost.get('value')))
+        item["costs_desc"] = costs_desc
+        item["costs_amount"] = costs_amount
 
     # print(item)
     # print(item["costs_amount"])
-    charges_desc = []
-    charges_amount = []
-    for charge in offer.get('charges'):
-        charges_desc.append(charge.get('desc'))
-        charges_amount.append(str(charge.get('value')))
-    item["charges_desc"] = charges_desc
-    item["charges_amount"] = charges_amount
+    if offer.get('charges'):
+        charges_desc = []
+        charges_amount = []
+        for charge in offer.get('charges'):
+            charges_desc.append(charge.get('desc'))
+            charges_amount.append(str(charge.get('value')))
+        item["charges_desc"] = charges_desc
+        item["charges_amount"] = charges_amount
 
     try:
         table.put_item(
             Item=item,
             ConditionExpression='attribute_not_exists(offer_key)'
         )
-        return func_resp(msg="offer Registered", data=[], status=200)
+        return func_resp(msg="offer Registered", data={"offer_key": str(uuid.uuid4())}, status=200)
     except exceptions.ParamValidationError as error:
         print('The parameters you provided are incorrect: {}'.format(error))
         return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
