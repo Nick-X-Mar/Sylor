@@ -99,7 +99,7 @@ def register_new_offer(offer):
             Item=item,
             ConditionExpression='attribute_not_exists(offer_key)'
         )
-        return func_resp(msg="offer Registered", data={"offer_key": str(uuid.uuid4())}, status=200)
+        return func_resp(msg="offer Registered", data={"offer_key": str(item["offer_key"])}, status=200)
     except exceptions.ParamValidationError as error:
         print('The parameters you provided are incorrect: {}'.format(error))
         return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)

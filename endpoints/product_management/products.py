@@ -9,6 +9,7 @@ from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
 from endpoints.get_single_user import execute_get_user_by_username
 from endpoints.offers_product_management.offers_product import register_new_offer_product
 from endpoints.translations_helper import connect_ids_with_translations
+from endpoints.get_single_product import get_product_by_id
 
 
 def get_all_products(headers, fav):
@@ -34,28 +35,28 @@ def get_all_products(headers, fav):
         return func_resp(msg='', data=[], status=200)
 
 
-def get_product_by_id(headers, product_key):
-    client, status = connect_to_dynamodb_resource()
-    if status != 200:
-        return func_resp(msg=client, data=[], status=status)
-
-    table = client.Table(DYNAMODB_PRODUCTS_TABLE)
-    # print(product_key)
-    try:
-        response = table.get_item(Key={'product_key': product_key})
-    except:
-        data = json.dumps({
-            "product_key": product_key
-        })
-        print(f"Error: Failed to retrieve product with data: {data}.")
-        return func_resp(msg="Failed to retrieve product.", data=[], status=400)
-
-    # print(response.get('Item'))
-    if response.get('Item') is None:
-        return func_resp(msg=f"Product with product_key:{product_key} not found.", data=[], status=404)
-    else:
-        status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg=msg, data=data[0], status=status)
+# def get_product_by_id(headers, product_key):
+#     client, status = connect_to_dynamodb_resource()
+#     if status != 200:
+#         return func_resp(msg=client, data=[], status=status)
+#
+#     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
+#     # print(product_key)
+#     try:
+#         response = table.get_item(Key={'product_key': product_key})
+#     except:
+#         data = json.dumps({
+#             "product_key": product_key
+#         })
+#         print(f"Error: Failed to retrieve product with data: {data}.")
+#         return func_resp(msg="Failed to retrieve product.", data=[], status=400)
+#
+#     # print(response.get('Item'))
+#     if response.get('Item') is None:
+#         return func_resp(msg=f"Product with product_key:{product_key} not found.", data=[], status=404)
+#     else:
+#         status, msg, data = connect_ids_with_translations(headers, [response['Item']])
+#         return func_resp(msg=msg, data=data[0], status=status)
 
 
 def _create_product(headers, product):

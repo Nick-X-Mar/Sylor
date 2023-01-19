@@ -4,6 +4,7 @@ from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource
 from config.config import DYNAMODB_OFFERS_PRODUCT_TABLE
+from endpoints.get_single_product import get_product_by_id
 from endpoints.translations_helper import connect_ids_with_translations
 
 
@@ -22,10 +23,27 @@ def get_all_offers(headers, offer_id):
                 # print(product)
                 if product.get('offer') == offer_id:
                     results.append(product)
-                    status, msg, data = connect_ids_with_translations(headers, results)
+
+            # status, msg, data = connect_ids_with_translations(headers, results)
 
         else:
-            status, msg, data = connect_ids_with_translations(headers, res['Items'])
+            results = res['Items']
+
+        actual_products = []
+        if results is not None:
+            for product in results:
+                if product.get("product") is not None:
+                    resp = get_product_by_id(headers=headers, product_key=product.get("product"))
+                    if resp[0] == 200:
+                        # print(product)
+                        # print(type(product))
+                        # print(resp[2])
+                        # print(type(resp[2]))
+                        # g = dict(product, **resp[2])
+                        # print(g)
+                        actual_products.append(dict(product, **resp[2]))
+            # print(actual_products)
+            status, msg, data = connect_ids_with_translations(headers, actual_products)
         return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
