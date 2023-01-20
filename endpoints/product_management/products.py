@@ -104,13 +104,13 @@ def _create_product(headers, product):
         return func_resp(msg="Registration not completed.", data=[], status=400), None
 
 
-def register_new_product(headers, product):
+def register_new_product(headers, product, replicas=1):
     # Not an existing product
     if product.get('product') is None:
         (status, msg, data), product = _create_product(headers, product)
         if status != 200:
             return func_resp(msg=msg, data=data, status=status)
-    return register_new_offer_product(headers, product)
+    return register_new_offer_product(headers, product, replicas)
 
 
 def delete_product(headers, product_key):
@@ -305,7 +305,13 @@ def product_related_methods(event, context):
         status, msg, data = check_request_post(headers, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = register_new_product(headers, body)
+            replicas = event.get("queryStringParameters", {'replicas': None}).get("replicas")
+            if replicas is not None:
+                try:
+                    replicas = int(replicas)
+                except:
+                    pass
+            status, msg, data = register_new_product(headers, body, replicas)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "PUT":

@@ -72,14 +72,14 @@ def get_offer_by_id(headers, offer_product_key):
         return func_resp(msg=msg, data=data[0], status=status)
 
 
-def register_new_offer_product(headers, offer_product):
+def register_new_offer_product(headers, offer_product, replicas=1):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     item = {
-        'offer_product_key': str(uuid.uuid4()),
+        # 'offer_product_key': str(uuid.uuid4()),
         'offer': str(offer_product.get('offer')),
         'product': str(offer_product.get('product')),
         'quantity': str(offer_product.get('quantity')),
@@ -87,31 +87,37 @@ def register_new_offer_product(headers, offer_product):
         'y': str(offer_product.get('y')),
         'z': str(offer_product.get('z')),
         'unit_amount': str(offer_product.get('unit_amount')),
-        'offer_position': str(offer_product.get('offer_position')),
-        'total_amount': str(float(offer_product.get('unit_amount')) * int(offer_product.get('quantity')))
+        'offer_position': str(offer_product.get('offer_position'))
     }
-    try:
-        table.put_item(
-            Item=item,
-            ConditionExpression='attribute_not_exists(offer_product_key)'
-        )
-        return func_resp(msg="offer_product Registered", data=[], status=200)
-    except exceptions.ParamValidationError as error:
-        print('The parameters you provided are incorrect: {}'.format(error))
-        return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
+    if offer_product.get('unit_amount') is not None and offer_product.get('quantity') is not None:
+        item['total_amount'] = str(float(offer_product.get('unit_amount')) * int(offer_product.get('quantity')))
 
-    except exceptions.ClientError as e:
-        print(f"Failed to register offer_product with error: {str(e.response.get('Error'))}")
-        msg = e.response.get('Error', {"Message": None}).get('Message')
-        if msg is None:
-            msg = "Failed to register offer_product."
-        else:
-            msg = "offer_product_key does not exist"
-        return func_resp(msg=msg, data=[], status=400)
+    for iteration in range(replicas):
+        item['offer_product_key'] = str(uuid.uuid4())
+        try:
+            table.put_item(
+                Item=item,
+                ConditionExpression='attribute_not_exists(offer_product_key)'
+            )
 
-    except:
-        print(f"Tried to store item: {item}")
-        return func_resp(msg="Registration not completed.", data=[], status=400)
+        except exceptions.ParamValidationError as error:
+            print('The parameters you provided are incorrect: {}'.format(error))
+            return func_resp(msg="Registration not completed due to parameter validation.", data=[], status=400)
+
+        except exceptions.ClientError as e:
+            print(f"Failed to register offer_product with error: {str(e.response.get('Error'))}")
+            msg = e.response.get('Error', {"Message": None}).get('Message')
+            if msg is None:
+                msg = "Failed to register offer_product."
+            else:
+                msg = "offer_product_key does not exist"
+            return func_resp(msg=msg, data=[], status=400)
+
+        except:
+            print(f"Tried to store item: {item}")
+            return func_resp(msg="Registration not completed.", data=[], status=400)
+
+    return func_resp(msg="offer_product Registered", data=[], status=200)
 
 
 def delete_offer(headers, offer_product_key):
