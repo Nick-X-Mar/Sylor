@@ -69,7 +69,7 @@ def _create_product(headers, product):
         'product_key': str(uuid.uuid4()),
         'product_name': product.get('product_name'),
         'img_url': product.get('img'),
-        'typology_id': product.get('typology_id'),
+        'typology': product.get('typology'),
         'typology_1': product.get('typology_1'),
         'typology_2': product.get('typology_2'),
         'typology_3': product.get('typology_3'),
