@@ -55,6 +55,7 @@ def register_new_offer(offer):
         'offer_id': str(offer.get('offer_id')),
         'offer_date': offer.get('offer_date'),
         'customer': offer.get('customer'),
+        'customer_name': offer.get('customer_name'),
         'offer_constructor': offer.get('offer_constructor'),
         'username': offer.get('username'),
         'charge': str(offer.get('charge')),
@@ -62,15 +63,9 @@ def register_new_offer(offer):
         'offer_amount': str(offer.get('offer_amount')),
         'fpa': str(offer.get('fpa')),
         'offer_to': offer.get('offer_to'),
-        'info_el_1': offer.get('info_el_1'),
-        'info_el_2': offer.get('info_el_2'),
-        'info_el_3': offer.get('info_el_3'),
-        'info_en_1': offer.get('info_en_1'),
-        'info_en_2': offer.get('info_en_2'),
-        'info_en_3': offer.get('info_en_3'),
-        'info_it_1': offer.get('info_it_1'),
-        'info_it_2': offer.get('info_it_2'),
-        'info_it_3': offer.get('info_it_3'),
+        'info_el': offer.get('info_el'),
+        'info_en': offer.get('info_en'),
+        'info_it': offer.get('info_it'),
         # 'costs': offer.get('costs'),
         # 'charges': offer.get('charges'),
     }
@@ -162,6 +157,12 @@ def update_offer(offer_key, body):
         upEx += " customer = :customer"
         attValues[":customer"] = body.get('customer')
         last = True
+    if body.get('customer_name') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " customer_name = :customer_name"
+        attValues[":customer_name"] = body.get('customer_name')
+        last = True
     if body.get('offer_constructor') is not None:
         if last is True:
             upEx += ","
@@ -207,59 +208,23 @@ def update_offer(offer_key, body):
         last = True
         # print(upEx)
         # print(attValues)
-    if body.get('info_el_1') is not None:
+    if body.get('info_el') is not None:
         if last is True:
             upEx += ","
-        upEx += " info_el_1 = :info_el_1"
-        attValues[":info_el_1"] = body.get('info_el_1')
+        upEx += " info_el = :info_el"
+        attValues[":info_el"] = body.get('info_el')
         last = True
-    if body.get('info_el_2') is not None:
+    if body.get('info_en') is not None:
         if last is True:
             upEx += ","
-        upEx += " info_el_2 = :info_el_2"
-        attValues[":info_el_2"] = body.get('info_el_2')
+        upEx += " info_en = :info_en"
+        attValues[":info_en"] = body.get('info_en')
         last = True
-    if body.get('info_el_3') is not None:
+    if body.get('info_it') is not None:
         if last is True:
             upEx += ","
-        upEx += " info_el_3 = :info_el_3"
-        attValues[":info_el_3"] = body.get('info_el_3')
-        last = True
-    if body.get('info_en_1') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " info_en_1 = :info_en_1"
-        attValues[":info_en_1"] = body.get('info_en_1')
-        last = True
-    if body.get('info_en_2') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " info_en_2 = :info_en_2"
-        attValues[":info_en_2"] = body.get('info_en_2')
-        last = True
-    if body.get('info_en_3') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " info_en_3 = :info_en_3"
-        attValues[":info_en_3"] = body.get('info_en_3')
-        last = True
-    if body.get('info_it_1') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " info_it_1 = :info_it_1"
-        attValues[":info_it_1"] = body.get('info_it_1')
-        last = True
-    if body.get('info_it_2') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " info_it_2 = :info_it_2"
-        attValues[":info_it_2"] = body.get('info_it_2')
-        last = True
-    if body.get('info_it_3') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " info_it_3 = :info_it_3"
-        attValues[":info_it_3"] = body.get('info_it_3')
+        upEx += " info_it = :info_it"
+        attValues[":info_it"] = body.get('info_it')
         last = True
     if body.get('costs') is not None:
         costs_desc = []

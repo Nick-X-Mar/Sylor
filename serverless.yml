@@ -8,6 +8,8 @@ package:
   exclude:
     - node_modules/**
     - .venv/**
+    - testing/
+    - .serverless/
 
 custom:
   dynamodb:
