@@ -14,6 +14,7 @@ def get_all_offers(headers, offer_id):
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
+    # with 10 offer products need more than 6 sec and we are fucked... timeout
     res = table.scan()
     if res.get('Items') is not None and len(res['Items']) > 0:
         status, msg, data = 200, "No products for this offer yet", []
@@ -43,8 +44,8 @@ def get_all_offers(headers, offer_id):
                         # print(g)
                         actual_products.append(dict(product, **resp[2]))
             # print(actual_products)
-            status, msg, data = connect_ids_with_translations(headers, actual_products)
-        return func_resp(msg=msg, data=data, status=status)
+            # status, msg, data = connect_ids_with_translations(headers, actual_products)
+        return func_resp(msg=msg, data=actual_products, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
 
