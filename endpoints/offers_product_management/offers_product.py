@@ -43,6 +43,7 @@ def get_all_offers(headers, offer_id):
                         # g = dict(product, **resp[2])
                         # print(g)
                         actual_products.append(dict(product, **resp[2]))
+            msg = ""
             # print(actual_products)
             # status, msg, data = connect_ids_with_translations(headers, actual_products)
         return func_resp(msg=msg, data=actual_products, status=status)
@@ -147,59 +148,47 @@ def update_offer_product(headers, offer_product_key, body):
     upEx = "set "
     last = False
     attValues = {}
-    if body.get('offer_name') is not None:
+    if body.get('quantity') is not None:
         if last is True:
             upEx += ","
-        upEx += " offer_name = :offer_name"
-        attValues[":offer_name"] = body.get('offer_name')
+        upEx += " quantity = :quantity"
+        attValues[":quantity"] = str(body.get('quantity'))
         last = True
-    if body.get('img') is not None:
+    if body.get('x') is not None:
         if last is True:
             upEx += ","
-        upEx += " img = :img"
-        attValues[":img"] = body.get('img')
+        upEx += " x = :x"
+        attValues[":x"] = str(body.get('x'))
         last = True
-    if body.get('typology') is not None:
+    if body.get('y') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology = :typology"
-        attValues[":typology"] = body.get('typology')
+        upEx += " y = :y"
+        attValues[":y"] = str(body.get('y'))
         last = True
-    if body.get('typology_1') is not None:
+    if body.get('z') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_1 = :typology_1"
-        attValues[":typology_1"] = body.get('typology_1')
+        upEx += " z = :z"
+        attValues[":z"] = str(body.get('z'))
         last = True
-    if body.get('typology_2') is not None:
+    if body.get('unit_amount') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_2 = :typology_2"
-        attValues[":typology_2"] = body.get('typology_2')
+        upEx += " unit_amount = :unit_amount"
+        attValues[":unit_amount"] = str(body.get('unit_amount'))
         last = True
-    if body.get('typology_3') is not None:
+    if body.get('offer_position') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_3 = :typology_3"
-        attValues[":typology_3"] = body.get('typology_3')
+        upEx += " offer_position = :offer_position"
+        attValues[":offer_position"] = str(body.get('offer_position'))
         last = True
-    if body.get('typology_4') is not None:
+    if body.get('unit_amount') is not None and body.get('quantity') is not None:
         if last is True:
             upEx += ","
-        upEx += " typology_4 = :typology_4"
-        attValues[":typology_4"] = body.get('typology_4')
-        last = True
-    if body.get('typology_5') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " typology_5 = :typology_5"
-        attValues[":typology_5"] = body.get('typology_5')
-        last = True
-    if body.get('typology_6') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " typology_6 = :typology_6"
-        attValues[":typology_6"] = body.get('typology_6')
+        upEx += " total_amount = :total_amount"
+        attValues[":total_amount"] = str(float(body.get('unit_amount')) * int(body.get('quantity')))
 
     client, status = connect_to_dynamodb_resource()
     if status != 200:
@@ -209,7 +198,7 @@ def update_offer_product(headers, offer_product_key, body):
         table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
         response = table.update_item(
             Key={
-                'offer_product_key': offer_product_key
+                'offer_product_key': str(offer_product_key)
             },
             UpdateExpression=upEx,
             ExpressionAttributeValues=attValues
@@ -317,14 +306,14 @@ def offers_product_related_methods(event, context):
         status, msg, data = check_request_put(headers, offer_product_key, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = update_offer_product(offer_product_key, body)
+            status, msg, data = update_offer_product(headers, offer_product_key, body)
         return api_resp(msg=msg, data=data, status=status)
 
     elif method == "DELETE":
         offer_product_key = event.get("queryStringParameters", {'offer_product_key': None}).get("offer_product_key")
         status, msg, data = check_request_delete(headers, offer_product_key)
         if status == 200:
-            status, msg, data = delete_offer(offer_product_key)
+            status, msg, data = delete_offer(headers, offer_product_key)
         return api_resp(msg=msg, data=data, status=status)
 
     else:
