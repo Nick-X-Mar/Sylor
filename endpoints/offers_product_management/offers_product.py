@@ -14,7 +14,6 @@ def get_all_offers(headers, offer_id):
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
-    # with 10 offer products need more than 6 sec and we are fucked... timeout
     res = table.scan()
     if res.get('Items') is not None and len(res['Items']) > 0:
         status, msg, data = 200, "No products for this offer yet", []
@@ -32,6 +31,7 @@ def get_all_offers(headers, offer_id):
 
         actual_products = []
         if results is not None:
+            results = connect_ids_with_translations(headers, results, lang='el')
             for product in results:
                 if product.get("product") is not None:
                     resp = get_product_by_id(headers=headers, product_key=product.get("product"))
