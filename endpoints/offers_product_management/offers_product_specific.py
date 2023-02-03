@@ -53,7 +53,7 @@ def check_request_put(headers, old_username, body):
 
 
 # @token_required
-def product_specific_related_methods(event, context):
+def offers_product_specific_related_methods(event, context):
     print(event)
     method = event.get("requestContext").get("http").get("method")
     # print(method)

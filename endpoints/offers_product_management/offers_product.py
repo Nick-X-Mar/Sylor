@@ -189,6 +189,25 @@ def update_offer_product(headers, offer_product_key, body):
             upEx += ","
         upEx += " total_amount = :total_amount"
         attValues[":total_amount"] = str(float(body.get('unit_amount')) * int(body.get('quantity')))
+    if body.get('extra_yalo_1') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_1 = :extra_yalo_1"
+        attValues[":extra_yalo_1"] = str(body.get('extra_yalo_1'))
+        last = True
+    if body.get('extra_yalo_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_2 = :extra_yalo_2"
+        attValues[":extra_yalo_2"] = str(body.get('extra_yalo_2'))
+        last = True
+    if body.get('extra_yalo_3') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_3 = :extra_yalo_3"
+        attValues[":extra_yalo_3"] = str(body.get('extra_yalo_3'))
+        last = True
+
 
     client, status = connect_to_dynamodb_resource()
     if status != 200:
