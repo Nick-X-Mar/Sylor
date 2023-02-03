@@ -149,6 +149,12 @@ def update_product(headers, product_key, body):
         upEx += " product_name = :product_name"
         attValues[":product_name"] = body.get('product_name')
         last = True
+    if body.get('fav') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " fav = :fav"
+        attValues[":fav"] = body.get('fav')
+        last = True
     if body.get('img') is not None:
         if last is True:
             upEx += ","
