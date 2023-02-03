@@ -195,11 +195,23 @@ def update_offer_product(headers, offer_product_key, body):
         upEx += " extra_yalo_1 = :extra_yalo_1"
         attValues[":extra_yalo_1"] = str(body.get('extra_yalo_1'))
         last = True
+    if body.get('extra_yalo_1_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_1_amount = :extra_yalo_1_amount"
+        attValues[":extra_yalo_1_amount"] = str(body.get('extra_yalo_1_amount'))
+        last = True
     if body.get('extra_yalo_2') is not None:
         if last is True:
             upEx += ","
         upEx += " extra_yalo_2 = :extra_yalo_2"
         attValues[":extra_yalo_2"] = str(body.get('extra_yalo_2'))
+        last = True
+    if body.get('extra_yalo_2_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_2_amount = :extra_yalo_2_amount"
+        attValues[":extra_yalo_2_amount"] = str(body.get('extra_yalo_2_amount'))
         last = True
     if body.get('extra_yalo_3') is not None:
         if last is True:
@@ -207,7 +219,215 @@ def update_offer_product(headers, offer_product_key, body):
         upEx += " extra_yalo_3 = :extra_yalo_3"
         attValues[":extra_yalo_3"] = str(body.get('extra_yalo_3'))
         last = True
-
+    if body.get('extra_yalo_3_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_3_amount = :extra_yalo_3_amount"
+        attValues[":extra_yalo_3_amount"] = str(body.get('extra_yalo_3_amount'))
+        last = True
+    if body.get('extra_yalo_4') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_4 = :extra_yalo_4"
+        attValues[":extra_yalo_4"] = str(body.get('extra_yalo_4'))
+        last = True
+    if body.get('extra_yalo_4_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_4_amount = :extra_yalo_4_amount"
+        attValues[":extra_yalo_4_amount"] = str(body.get('extra_yalo_4_amount'))
+        last = True
+    if body.get('extra_yalo_5') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_5 = :extra_yalo_5"
+        attValues[":extra_yalo_5"] = str(body.get('extra_yalo_5'))
+        last = True
+    if body.get('extra_yalo_5_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_5_amount = :extra_yalo_5_amount"
+        attValues[":extra_yalo_5_amount"] = str(body.get('extra_yalo_5_amount'))
+        last = True
+    if body.get('extra_yalo_6') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_6 = :extra_yalo_6"
+        attValues[":extra_yalo_6"] = str(body.get('extra_yalo_6'))
+        last = True
+    if body.get('extra_yalo_6_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_6_amount = :extra_yalo_6_amount"
+        attValues[":extra_yalo_6_amount"] = str(body.get('extra_yalo_6_amount'))
+        last = True
+    if body.get('extra_yalo_7') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_7 = :extra_yalo_7"
+        attValues[":extra_yalo_7"] = str(body.get('extra_yalo_7'))
+        last = True
+    if body.get('extra_yalo_7_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_7_amount = :extra_yalo_7_amount"
+        attValues[":extra_yalo_7_amount"] = str(body.get('extra_yalo_7_amount'))
+        last = True
+    if body.get('extra_yalo_8') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_8 = :extra_yalo_8"
+        attValues[":extra_yalo_8"] = str(body.get('extra_yalo_8'))
+        last = True
+    if body.get('extra_yalo_8_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_8_amount = :extra_yalo_8_amount"
+        attValues[":extra_yalo_8_amount"] = str(body.get('extra_yalo_8_amount'))
+        last = True
+    if body.get('extra_yalo_9') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_9 = :extra_yalo_9"
+        attValues[":extra_yalo_9"] = str(body.get('extra_yalo_9'))
+        last = True
+    if body.get('extra_yalo_9_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_9_amount = :extra_yalo_9_amount"
+        attValues[":extra_yalo_9_amount"] = str(body.get('extra_yalo_9_amount'))
+        last = True
+    if body.get('extra_yalo_10') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_10 = :extra_yalo_10"
+        attValues[":extra_yalo_10"] = str(body.get('extra_yalo_10'))
+        last = True
+    if body.get('extra_yalo_10_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_10_amount = :extra_yalo_10_amount"
+        attValues[":extra_yalo_10_amount"] = str(body.get('extra_yalo_10_amount'))
+        last = True
+    if body.get('extra_yalo_11') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_11 = :extra_yalo_11"
+        attValues[":extra_yalo_11"] = str(body.get('extra_yalo_11'))
+        last = True
+    if body.get('extra_yalo_11_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_11_amount = :extra_yalo_11_amount"
+        attValues[":extra_yalo_11_amount"] = str(body.get('extra_yalo_11_amount'))
+        last = True
+    if body.get('extra_yalo_12') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_12 = :extra_yalo_12"
+        attValues[":extra_yalo_12"] = str(body.get('extra_yalo_12'))
+        last = True
+    if body.get('extra_yalo_12_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_yalo_12_amount = :extra_yalo_12_amount"
+        attValues[":extra_yalo_12_amount"] = str(body.get('extra_yalo_12_amount'))
+        last = True
+    if body.get('extra_patzoy_1_1') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_1_1 = :extra_patzoy_1_1"
+        attValues[":extra_patzoy_1_1"] = str(body.get('extra_patzoy_1_1'))
+        last = True
+    if body.get('extra_patzoy_1_1_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_1_1_amount = :extra_patzoy_1_1_amount"
+        attValues[":extra_patzoy_1_1_amount"] = str(body.get('extra_patzoy_1_1_amount'))
+        last = True
+    if body.get('extra_patzoy_1_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_1_2 = :extra_patzoy_1_2"
+        attValues[":extra_patzoy_1_2"] = str(body.get('extra_patzoy_1_2'))
+        last = True
+    if body.get('extra_patzoy_1_2_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_1_2_amount = :extra_patzoy_1_2_amount"
+        attValues[":extra_patzoy_1_2_amount"] = str(body.get('extra_patzoy_1_2_amount'))
+        last = True
+    if body.get('extra_patzoy_2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_2 = :extra_patzoy_2"
+        attValues[":extra_patzoy_2"] = str(body.get('extra_patzoy_2'))
+        last = True
+    if body.get('extra_patzoy_2_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_2_amount = :extra_patzoy_2_amount"
+        attValues[":extra_patzoy_2_amount"] = str(body.get('extra_patzoy_2_amount'))
+        last = True
+    if body.get('extra_patzoy_3') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_3 = :extra_patzoy_3"
+        attValues[":extra_patzoy_3"] = str(body.get('extra_patzoy_3'))
+        last = True
+    if body.get('extra_patzoy_3_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_3_amount = :extra_patzoy_3_amount"
+        attValues[":extra_patzoy_3_amount"] = str(body.get('extra_patzoy_3_amount'))
+        last = True
+    if body.get('extra_patzoy_4') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_4 = :extra_patzoy_4"
+        attValues[":extra_patzoy_4"] = str(body.get('extra_patzoy_4'))
+        last = True
+    if body.get('extra_patzoy_4_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_4_amount = :extra_patzoy_4_amount"
+        attValues[":extra_patzoy_4_amount"] = str(body.get('extra_patzoy_4_amount'))
+        last = True
+    if body.get('extra_patzoy_5') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_5 = :extra_patzoy_5"
+        attValues[":extra_patzoy_5"] = str(body.get('extra_patzoy_5'))
+        last = True
+    if body.get('extra_patzoy_5_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_5_amount = :extra_patzoy_5_amount"
+        attValues[":extra_patzoy_5_amount"] = str(body.get('extra_patzoy_5_amount'))
+        last = True
+    if body.get('extra_patzoy_6') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_6 = :extra_patzoy_6"
+        attValues[":extra_patzoy_6"] = str(body.get('extra_patzoy_6'))
+        last = True
+    if body.get('extra_patzoy_6_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_6_amount = :extra_patzoy_6_amount"
+        attValues[":extra_patzoy_6_amount"] = str(body.get('extra_patzoy_6_amount'))
+        last = True
+    if body.get('extra_patzoy_7') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_7 = :extra_patzoy_7"
+        attValues[":extra_patzoy_7"] = str(body.get('extra_patzoy_7'))
+        last = True
+    if body.get('extra_patzoy_7_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_patzoy_7_amount = :extra_patzoy_7_amount"
+        attValues[":extra_patzoy_7_amount"] = str(body.get('extra_patzoy_7_amount'))
 
     client, status = connect_to_dynamodb_resource()
     if status != 200:
