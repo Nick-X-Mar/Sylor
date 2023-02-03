@@ -2,21 +2,21 @@
    "version":"2.0",
    "routeKey":"GET /offers_product",
    "rawPath":"/offers_product",
-   "rawQueryString":"offer_id=cbbaa5a1-af57-4a06-9014-acb64412c3d8",
+   "rawQueryString":"offer_id=44e1854d-0962-4bb4-860d-18f9035e5fa1",
    "headers":{
       "accept":"*/*",
       "accept-encoding":"gzip, deflate, br",
       "content-length":"0",
       "host":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
-      "postman-token":"8a306c01-db83-49c0-b084-105e58993439",
-      "user-agent":"PostmanRuntime/7.30.0",
-      "x-amzn-trace-id":"Root=1-63c98778-0b3c46ca27094e642efba18c",
-      "x-forwarded-for":"80.107.121.242",
+      "postman-token":"55526366-cf77-4419-9ff6-3c782b7b029f",
+      "user-agent":"PostmanRuntime/7.30.1",
+      "x-amzn-trace-id":"Root=1-63dd0521-7ffa49c262eecad8285041a5",
+      "x-forwarded-for":"2.87.82.153",
       "x-forwarded-port":"443",
       "x-forwarded-proto":"https"
    },
    "queryStringParameters":{
-      "offer_id":"cbbaa5a1-af57-4a06-9014-acb64412c3d8"
+      "offer_id":"44e1854d-0962-4bb4-860d-18f9035e5fa1"
    },
    "requestContext":{
       "accountId":"911894295923",
@@ -27,14 +27,14 @@
          "method":"GET",
          "path":"/offers_product",
          "protocol":"HTTP/1.1",
-         "sourceIp":"80.107.121.242",
-         "userAgent":"PostmanRuntime/7.30.0"
+         "sourceIp":"2.87.82.153",
+         "userAgent":"PostmanRuntime/7.30.1"
       },
-      "requestId":"fAIa6iFVliAEPww=",
+      "requestId":"fw29RiHLFiAEPVA=",
       "routeKey":"GET /offers_product",
       "stage":"$default",
-      "time":"19/Jan/2023:18:10:00 +0000",
-      "timeEpoch":1674151800819
+      "time":"03/Feb/2023:12:59:13 +0000",
+      "timeEpoch":1675429153573
    },
    "isBase64Encoded":false
 }
