@@ -280,7 +280,7 @@ def offers_product_related_methods(event, context):
     # print(method)
     headers = event.get('headers')
     if method == "GET":
-        if event.get("rawPath") == '/offers/id':
+        if event.get("rawPath") == '/offers_product/id':
             offer_product_key = event.get("queryStringParameters", {'offer_product_key': None}).get("offer_product_key")
             if offer_product_key is not None and offer_product_key != "":
                 status, msg, data = get_offer_by_id(headers, offer_product_key)
