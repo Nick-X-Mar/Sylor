@@ -4,8 +4,9 @@ from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource
 from config.config import DYNAMODB_OFFERS_PRODUCT_TABLE
-from endpoints.get_single_product import get_product_by_id
+from endpoints.get_single_product import get_product_by_id, get_products_by_id_list
 from endpoints.translations_helper import connect_ids_with_translations
+from boto3.dynamodb.conditions import Key, Attr
 
 
 def get_all_offers(headers, offer_id):
@@ -14,39 +15,33 @@ def get_all_offers(headers, offer_id):
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
-    res = table.scan()
-    if res.get('Items') is not None and len(res['Items']) > 0:
-        status, msg, data = 200, "No products for this offer yet", []
-        if offer_id is not None:
-            results = []
-            for product in res['Items']:
-                # print(product)
-                if product.get('offer') == offer_id:
-                    results.append(product)
+    if offer_id is not None:
+        res = table.scan(FilterExpression=Attr('offer').eq(offer_id))
+    else:
+        res = table.scan()
+    results = res['Items']
+    # print("Results")
+    # print(results)
+    actual_products = []
+    if results is not None and len(results) > 0:
+        product_keys = []
+        for item in results:
+            product_keys.append((item.get('product')))
 
-            # status, msg, data = connect_ids_with_translations(headers, results)
+        status, msg, data = get_products_by_id_list(headers, product_keys)
+        # print(data)
 
-        else:
-            results = res['Items']
+        if status == 200:
+            for unique_product in data:  # uniques
+                # print(unique_product)
+                uKey = unique_product.get("product_key")
+                for product in results:
+                    if uKey == product.get("product"):
+                        # print("in")
+                        actual_products.append(dict(product, **unique_product))
 
-        actual_products = []
-        if results is not None:
-            results = connect_ids_with_translations(headers, results, lang='el')
-            for product in results:
-                if product.get("product") is not None:
-                    resp = get_product_by_id(headers=headers, product_key=product.get("product"))
-                    if resp[0] == 200:
-                        # print(product)
-                        # print(type(product))
-                        # print(resp[2])
-                        # print(type(resp[2]))
-                        # g = dict(product, **resp[2])
-                        # print(g)
-                        actual_products.append(dict(product, **resp[2]))
-            msg = ""
-            # print(actual_products)
-            # status, msg, data = connect_ids_with_translations(headers, actual_products)
-        return func_resp(msg=msg, data=actual_products, status=status)
+        status, msg, data = connect_ids_with_translations(headers, actual_products)
+        return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
 
