@@ -9,7 +9,7 @@ package:
     - node_modules/**
     - .venv/**
     - testing/
-    - .serverless/
+#    - .serverless/
 
 custom:
   dynamodb:

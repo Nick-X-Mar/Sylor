@@ -40,7 +40,7 @@ def get_all_offers(headers, offer_id):
                         # print("in")
                         actual_products.append(dict(product, **unique_product))
 
-        status, msg, data = connect_ids_with_translations(headers, actual_products)
+            status, msg, data = connect_ids_with_translations(headers, actual_products)
         return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
