@@ -38,13 +38,14 @@ def get_products_by_id_list(headers, product_keys):
 
     product_keys = list(set(product_keys))
     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
-    batch_keys = {
-        table.name: {
-            'Keys': [
-            ]
-        }
-    }
+
     try:
+        batch_keys = {
+            "sylorProducts": {
+                'Keys': [
+                ]
+            }
+        }
         # product_keys =  ['df4c6b7c-506b-4d42-b387-b400bc3ed300', '329c7269-ea12-4956-bf5f-ee048cced063', '60fdd279-00bd-4039-9fe1-ebe27818736b', '53897163-5ebd-4bf8-9bfd-80774c651115', '10ade620-03a4-4fb7-84fc-841fb9fa765f', '6b95d488-234a-410f-a567-a9ac57d428fb']
         for key in product_keys:
             batch_keys.get(table.name).get('Keys').append({"product_key": key})

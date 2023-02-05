@@ -148,6 +148,7 @@ functions:
 
   translations_management:
     handler: endpoints/translations_management/translations.translations_related_methods
+    timeout: 20
     events:
       - httpApi:
           method: 'GET'
@@ -170,6 +171,7 @@ functions:
 
   products_management:
     handler: endpoints/product_management/products.product_related_methods
+    timeout: 20
     events:
       - httpApi:
           method: 'GET'
@@ -227,6 +229,7 @@ functions:
 
   offers_management:
     handler: endpoints/offers_management/offers.offer_related_methods
+    timeout: 20
     events:
       - httpApi:
           method: 'GET'
@@ -246,6 +249,7 @@ functions:
 
   offers_product_management:
     handler: endpoints/offers_product_management/offers_product.offers_product_related_methods
+    timeout: 20
     events:
       - httpApi:
           method: 'GET'

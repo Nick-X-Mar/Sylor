@@ -22,25 +22,37 @@ def get_all_offers(headers, offer_id):
     results = res['Items']
     # print("Results")
     # print(results)
-    actual_products = []
+
     if results is not None and len(results) > 0:
         product_keys = []
         for item in results:
             product_keys.append((item.get('product')))
 
-        status, msg, data = get_products_by_id_list(headers, product_keys)
-        # print(data)
-
-        if status == 200:
-            for unique_product in data:  # uniques
-                # print(unique_product)
-                uKey = unique_product.get("product_key")
+        unique_product_keys = list(set(product_keys))
+        actual_products = []
+        for unique_product_key in unique_product_keys:
+            status, msg, data = get_product_by_id(headers, unique_product_key)
+            if status == 200:
                 for product in results:
-                    if uKey == product.get("product"):
-                        # print("in")
-                        actual_products.append(dict(product, **unique_product))
+                    if product.get("product") == unique_product_key:
+                        actual_products.append(dict(product, **data))
 
-            status, msg, data = connect_ids_with_translations(headers, actual_products)
+                # # append edw pali ena ena
+                # status, msg, data = get_products_by_id_list(headers, product_keys)
+                # # print(data)
+                #
+                # if status == 200:
+                #     actual_products = []
+                #     for unique_product in data:  # uniques
+                #         # print(unique_product)
+                #         uKey = unique_product.get("product_key")
+                #         for product in results:
+                #             if uKey == product.get("product"):
+                #                 # print("in")
+                #                 actual_products.append(dict(product, **unique_product))
+                #
+
+        status, msg, data = connect_ids_with_translations(headers, actual_products)
         return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
