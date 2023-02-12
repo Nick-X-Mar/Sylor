@@ -1,12 +1,12 @@
 import json
 import uuid
-from passlib.hash import pbkdf2_sha256
-from authenticate.auth import token_required
+# from passlib.hash import pbkdf2_sha256
+# from authenticate.auth import token_required
 from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
 from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
-from endpoints.get_single_user import execute_get_user_by_username
+# from endpoints.get_single_user import execute_get_user_by_username
 from endpoints.offers_product_management.offers_product import register_new_offer_product
 from endpoints.translations_helper import connect_ids_with_translations
 from endpoints.get_single_product import get_product_by_id
@@ -59,17 +59,23 @@ def get_all_products(headers, fav):
 #         return func_resp(msg=msg, data=data[0], status=status)
 
 
+def store_file_aws(key, file):
+    print(file)
+
+
 def _create_product(headers, product):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status), None
 
+    product_key = str(uuid.uuid4())
     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
     item = {
-        'product_key': str(uuid.uuid4()),
+        'product_key': product_key,
         'product_name': product.get('product_name'),
-        'img_url': product.get('img'),
         'typology': product.get('typology'),
+        'img': product.get('img'),
+        'img_uid': product.get('img_uid'),
         'typology_1': product.get('typology_1'),
         'typology_2': product.get('typology_2'),
         'typology_3': product.get('typology_3'),
@@ -78,6 +84,7 @@ def _create_product(headers, product):
         'typology_6': product.get('typology_6'),
         'fav': product.get('fav') if product.get('fav') is not None else False,
     }
+
     try:
         table.put_item(
             Item=item,
@@ -135,6 +142,56 @@ def delete_product(headers, product_key):
         return func_resp(msg='Deletion Failed.', data=[], status=400)
 
 
+# def update_product_img(headers, product_key, file):
+#     # print(product_key)
+#     # print(type(file))
+#     print(type(file))
+#     import boto3
+#
+#     # import base64
+#     # post_data = event['body']
+#     # post_data = base64.b64decode(event['body'])
+#     import base64
+#     AWS_BUCKET_NAME = "sylorimgbucket"
+#     s3 = boto3.resource('s3')
+#     bucket = s3.Bucket(AWS_BUCKET_NAME)
+#     path = product_key
+#
+#     # print(file)
+#     # headers, data = file.decode('utf-16').split('\r\n', 1)
+#     # print(file)
+#     # headers, data = (base64.b64decode(file)).decode("utf-8").split('\r\n', 1)
+#
+#     for a in file.splitlines():
+#         headers = a
+#         break
+#     print(len(file))
+#     print(len(headers))
+#
+#     data = file[len(headers):]
+#     print(len(data))
+#         # print(a)
+#     bucket.put_object(
+#         ACL='public-read',
+#         # ContentType='text/plain',
+#         Key=path,
+#         Body=data,
+#     )
+#     bucket_name = "sylorimgbucket"
+#     # working
+#     # boto3.client("s3").download_file(
+#     #     Bucket=bucket_name,
+#     #     Key=product_key,
+#     #     Filename=f"{product_key}.png"
+#     # )
+#     bucket_location = boto3.client('s3').get_bucket_location(Bucket=bucket_name)
+#     object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
+#         bucket_location['LocationConstraint'],
+#         bucket_name,
+#         product_key)
+#     return func_resp(msg='Ok', data=object_url, status=200)
+
+
 def update_product(headers, product_key, body):
     status, msg, data = get_product_by_id(headers, product_key)
     if data.get('fav') is True or data.get('fav') == "true":
@@ -160,6 +217,12 @@ def update_product(headers, product_key, body):
             upEx += ","
         upEx += " img = :img"
         attValues[":img"] = body.get('img')
+        last = True
+    if body.get('img_uid') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " img_uid = :img_uid"
+        attValues[":img_uid"] = body.get('img_uid')
         last = True
     if body.get('typology') is not None:
         if last is True:
@@ -291,7 +354,7 @@ def check_request_put(headers, product_key, args):
 
 # @token_required
 def product_related_methods(event, context):
-    print(event)
+    # print(event)
     method = event.get("requestContext").get("http").get("method")
     # print(method)
     headers = event.get('headers')

@@ -2,19 +2,32 @@
    "version":"2.0",
    "routeKey":"POST /products/registration",
    "rawPath":"/products/registration",
-   "rawQueryString":"",
+   "rawQueryString":"replicas=1",
    "headers":{
       "accept":"*/*",
       "accept-encoding":"gzip, deflate, br",
-      "content-length":"500",
+      "accept-language":"en,el-GR;q=0.9,el;q=0.8,en-GB;q=0.7",
+      "content-length":"265",
       "content-type":"application/json",
       "host":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
-      "postman-token":"44b49468-132f-400a-8791-3ad4bf7c92fa",
-      "user-agent":"PostmanRuntime/7.29.2",
-      "x-amzn-trace-id":"Root=1-63751c6c-49f279f744febbeb6d0c2df7",
-      "x-forwarded-for":"2.84.72.230",
+      "origin":"https://iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "referer":"http://localhost:3000/offers/edit/481ea52d-4feb-456b-baa0-3d3d2c0f2776/add",
+      "sec-ch-ua":"\"Not_A Brand\";v=\"99\", \"Google Chrome\";v=\"109\", \"Chromium\";v=\"109\"",
+      "sec-ch-ua-mobile":"?0",
+      "sec-ch-ua-platform":"\"macOS\"",
+      "sec-fetch-dest":"empty",
+      "sec-fetch-mode":"cors",
+      "sec-fetch-site":"same-origin",
+      "user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+      "x-amzn-trace-id":"Root=1-63e265f1-5b61c29f7225839a4faedba2",
+      "x-forwarded-for":"127.0.0.1, 94.65.140.212",
+      "x-forwarded-host":"localhost:3000",
       "x-forwarded-port":"443",
-      "x-forwarded-proto":"https"
+      "x-forwarded-proto":"https",
+      "x_access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5pa29zIiwiZXhwIjoxNjc1MzYxOTU1fQ.P7OgzOZ6LChjXTvQnTh5HT4zSd-ChsD_n91kcC4rrt0"
+   },
+   "queryStringParameters":{
+      "replicas":"1"
    },
    "requestContext":{
       "accountId":"911894295923",
@@ -25,15 +38,15 @@
          "method":"POST",
          "path":"/products/registration",
          "protocol":"HTTP/1.1",
-         "sourceIp":"2.84.72.230",
-         "userAgent":"PostmanRuntime/7.29.2"
+         "sourceIp":"94.65.140.212",
+         "userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"
       },
-      "requestId":"btFhBi29liAEPmw=",
+      "requestId":"f-TduiYGliAEPPA=",
       "routeKey":"POST /products/registration",
       "stage":"$default",
-      "time":"16/Nov/2022:17:22:52 +0000",
-      "timeEpoch":1668619372705
+      "time":"07/Feb/2023:14:53:37 +0000",
+      "timeEpoch":1675781617231
    },
-   "body":"{\n    \"product_name\": \"bf30a24b-8a65-40d4-8aae-1b2d22ce6dea\",\n    \"img\": \"url/url\",\n    \"typology\": \"8ef1ae8e-bc09-4b8e-bc68-b022d5e81cb8\",\n    \"typology_1\": \"d6203c71-3797-40fa-9dd7-2627afff9f51\",\n    \"typology_2\": \"0d9b5af8-be79-47ec-9d25-e8a11511b882\",\n    \"typology_3\": \"d4ab36a6-d4e6-4666-8334-d7c33541d7b8\",\n    \"typology_4\": \"9a187e7a-d643-47e6-a634-4cb9986e4b1b\",\n    \"fav\": true,\n    \"offer\": \"3875192f-70ab-44a6-a4e9-4f3eac0f3162\",\n    \"offer_position\": 2,\n    \"quantity\": 3,\n    \"unit_amount\": 210\n}",
+   "body":"{\"typology\":\"8ef1ae8e-bc09-4b8e-bc68-b022d5e81cb8\",\"typology_1\":\"\",\"typology_2\":\"\",\"typology_3\":\"\",\"typology_4\":\"\",\"typology_5\":\"\",\"typology_6\":\"\",\"file_upload\":{},\"offer\":\"481ea52d-4feb-456b-baa0-3d3d2c0f2776\",\"product_name\":\"58ee215c-5fab-45e2-a296-15cbd87c68aa\"}",
    "isBase64Encoded":false
 }

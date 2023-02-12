@@ -50,9 +50,19 @@ def register_new_offer(offer):
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_OFFERS_TABLE)
+    if offer.get('offer_id') is not None:
+        initital_offer = '00000'
+        try:
+            offer_id = str(int(offer.get('offer_id')) + 1)
+            offer_id = initital_offer[:-len(offer_id)] + offer_id
+        except:
+            offer_id = None
+    else:
+        offer_id = None
+
     item = {
         'offer_key': str(uuid.uuid4()),
-        'offer_id': str(offer.get('offer_id')),
+        'offer_id': offer_id,
         'offer_date': offer.get('offer_date'),
         'customer': offer.get('customer'),
         'customer_name': offer.get('customer_name'),

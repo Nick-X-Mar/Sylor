@@ -7,7 +7,7 @@ from endpoints.translations_helper import connect_ids_with_translations
 # import boto3
 
 
-def get_product_by_id(headers, product_key):
+def get_product_by_id(headers, product_key, translation=True):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -27,8 +27,11 @@ def get_product_by_id(headers, product_key):
     if response.get('Item') is None:
         return func_resp(msg=f"Product with product_key:{product_key} not found.", data=[], status=404)
     else:
-        status, msg, data = connect_ids_with_translations(headers, [response['Item']])
-        return func_resp(msg=msg, data=data[0], status=status)
+        if translation:
+            status, msg, data = connect_ids_with_translations(headers, [response['Item']])
+            return func_resp(msg=msg, data=data[0], status=status)
+        else:
+            return func_resp(msg="", data=response['Item'], status=200)
 
 
 def get_products_by_id_list(headers, product_keys):

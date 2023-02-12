@@ -8,6 +8,7 @@ package:
   exclude:
     - node_modules/**
     - .venv/**
+    - venv/
     - testing/
 #    - .serverless/
 
@@ -17,6 +18,10 @@ custom:
       migrate: false # auto migrate on dynamodb start
 
 provider:
+#  s3:
+#    imgBucket:
+#      name: my-custom-bucket-name
+
   name: aws
   runtime: python3.9
   region: eu-central-1
@@ -120,6 +125,11 @@ provider:
         - { "Fn::GetAtt": [ "sylorOffersProduct", "Arn" ] }
 
 functions:
+#  resize:
+#    handler: resize.handler
+#    events:
+#      - s3: imgBucket
+
   login_be:
     handler: authenticate/user_login.loging_request_receiver
     events:
@@ -188,6 +198,9 @@ functions:
       - httpApi:
           method: 'PUT'
           path: /products/edit
+      - httpApi:
+          method: 'PUT'
+          path: /products/edit/img
 
   product_schema_management:
     handler: endpoints/product_management/product_category_schema.product_schema_related_methods
@@ -288,6 +301,12 @@ functions:
 
 resources:
   Resources:
+    SylorImgBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: sylorimgbucket
+        AccessControl: PublicRead
+
     sylorUsersTable:
       Type: AWS::DynamoDB::Table
       Properties:

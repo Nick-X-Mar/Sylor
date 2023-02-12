@@ -31,7 +31,7 @@ def get_all_offers(headers, offer_id):
         unique_product_keys = list(set(product_keys))
         actual_products = []
         for unique_product_key in unique_product_keys:
-            status, msg, data = get_product_by_id(headers, unique_product_key)
+            status, msg, data = get_product_by_id(headers=headers, product_key=unique_product_key, translation=False)
             if status == 200:
                 for product in results:
                     if product.get("product") == unique_product_key:
@@ -95,8 +95,9 @@ def register_new_offer_product(headers, offer_product, replicas=1):
         'x': str(offer_product.get('x')),
         'y': str(offer_product.get('y')),
         'z': str(offer_product.get('z')),
+        "set_time": str(offer_product.get("set_time")),
         'unit_amount': str(offer_product.get('unit_amount')),
-        'offer_position': str(offer_product.get('offer_position'))
+        'offer_product_code': str(offer_product.get('offer_product_code'))
     }
     if offer_product.get('unit_amount') is not None and offer_product.get('quantity') is not None:
         item['total_amount'] = str(float(offer_product.get('unit_amount')) * int(offer_product.get('quantity')))
@@ -185,11 +186,17 @@ def update_offer_product(headers, offer_product_key, body):
         upEx += " unit_amount = :unit_amount"
         attValues[":unit_amount"] = str(body.get('unit_amount'))
         last = True
-    if body.get('offer_position') is not None:
+    if body.get('set_time') is not None:
         if last is True:
             upEx += ","
-        upEx += " offer_position = :offer_position"
-        attValues[":offer_position"] = str(body.get('offer_position'))
+        upEx += " set_time = :set_time"
+        attValues[":set_time"] = str(body.get('set_time'))
+        last = True
+    if body.get('offer_product_code') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " offer_product_code = :offer_product_code"
+        attValues[":offer_product_code"] = str(body.get('offer_product_code'))
         last = True
     if body.get('unit_amount') is not None and body.get('quantity') is not None:
         if last is True:
