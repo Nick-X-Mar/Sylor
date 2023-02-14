@@ -1,0 +1,39 @@
+{
+   "version":"2.0",
+   "routeKey":"POST /extra_costings/registration",
+   "rawPath":"/extra_costings/registration",
+   "rawQueryString":"",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "content-length":"235",
+      "content-type":"application/json",
+      "host":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "postman-token":"82570b69-4e96-432e-9d02-2562a49d8bf6",
+      "user-agent":"PostmanRuntime/7.29.2",
+      "x-amzn-trace-id":"Root=1-63681c9d-76e3d58d5bf27c7101d69c87",
+      "x-forwarded-for":"2.84.72.230",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"js7qalyf8b",
+      "domainName":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"js7qalyf8b",
+      "http":{
+         "method":"POST",
+         "path":"/extra_costings/registration",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"2.84.72.230",
+         "userAgent":"PostmanRuntime/7.29.2"
+      },
+      "requestId":"bMlopg08liAEPlQ=",
+      "routeKey":"POST /extra_costings/registration",
+      "stage":"$default",
+      "time":"06/Nov/2022:20:44:13 +0000",
+      "timeEpoch":1667767453521
+   },
+   "body":"{\n    \"translation_id\": \"adf6298c-26fa-4083-965b-eb687486e03e\",\n    \"m2_limit\": \"5\",\n    \"extra_cost\": \"5.2\" \n}",
+   "isBase64Encoded":false
+}

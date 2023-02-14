@@ -9,7 +9,7 @@ from endpoints.translations_helper import connect_ids_with_translations
 from boto3.dynamodb.conditions import Key, Attr
 
 
-def get_all_offers(headers, offer_id):
+def get_all_offers(headers, offer_id, lang):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
@@ -31,7 +31,8 @@ def get_all_offers(headers, offer_id):
         unique_product_keys = list(set(product_keys))
         actual_products = []
         for unique_product_key in unique_product_keys:
-            status, msg, data = get_product_by_id(headers=headers, product_key=unique_product_key, translation=False)
+            print(f"get more info for product {unique_product_key} and lang is {lang}")
+            status, msg, data = get_product_by_id(headers=headers, product_key=unique_product_key, translation=False, lang=lang)
             if status == 200:
                 for product in results:
                     if product.get("product") == unique_product_key:
@@ -52,7 +53,7 @@ def get_all_offers(headers, offer_id):
                 #                 actual_products.append(dict(product, **unique_product))
                 #
 
-        status, msg, data = connect_ids_with_translations(headers, actual_products)
+        status, msg, data = connect_ids_with_translations(headers, actual_products, lang)
         return func_resp(msg=msg, data=data, status=status)
     else:
         return func_resp(msg='', data=[], status=200)
@@ -541,7 +542,9 @@ def offers_product_related_methods(event, context):
             return api_resp(msg="offer_product_key not specified", data=[], status=400)
 
         offer_id = event.get("queryStringParameters", {'offer_id': None}).get("offer_id")
-        status, msg, data = get_all_offers(headers, offer_id)
+        lang = event.get("queryStringParameters", {'lang': None}).get("lang")
+        print(f"lang: {lang}")
+        status, msg, data = get_all_offers(headers, offer_id, lang)
         print(data)
         return api_resp(msg=msg, data=data, status=status)
 

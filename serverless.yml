@@ -124,6 +124,17 @@ provider:
       Resource:
         - { "Fn::GetAtt": [ "sylorOffersProduct", "Arn" ] }
 
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorExtraCostings", "Arn" ] }
+
 functions:
 #  resize:
 #    handler: resize.handler
@@ -280,24 +291,37 @@ functions:
           method: 'PUT'
           path: /offers_product/edit
 
-#  offers_product_specifics_management:
-#    handler: endpoints/offers_product_management/offers_product_specific.offers_product_specific_related_methods
-#    events:
-#      - httpApi:
-#          method: 'GET'
-#          path: /offers_product
-#      - httpApi:
-#          method: 'GET'
-#          path: /offers_product/id
-#      - httpApi:
-#          method: 'POST'
-#          path: /offers_product/registration
-#      - httpApi:
-#          method: 'DELETE'
-#          path: /offers_product/delete
-#      - httpApi:
-#          method: 'PUT'
-#          path: /offers_product/edit
+  extra_costings_management:
+    handler: endpoints/extra_costings_management/extra_costings.extra_costings_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /extra_costings
+      - httpApi:
+          method: 'GET'
+          path: /extra_costings/id
+      - httpApi:
+          method: 'GET'
+          path: /extra_costings/translation_id
+      - httpApi:
+          method: 'POST'
+          path: /extra_costings/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /extra_costings/delete
+      - httpApi:
+          method: 'PUT'
+          path: /extra_costings/edit
+
+  costing_management:
+    handler: endpoints/costing/costing.costing_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /costing
+      - httpApi:
+          method: 'POST'
+          path: /costing/registration
 
 resources:
   Resources:
@@ -306,6 +330,20 @@ resources:
       Properties:
         BucketName: sylorimgbucket
         AccessControl: PublicRead
+
+    sylorExtraCostings:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorExtraCostings
+        AttributeDefinitions:
+          - AttributeName: extra_costing_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: extra_costing_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
     sylorUsersTable:
       Type: AWS::DynamoDB::Table
