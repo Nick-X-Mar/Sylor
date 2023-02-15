@@ -19,14 +19,33 @@ def get_all_extra_costings(headers):
 
 # @token_required
 def register_new_costing(args):
-    config.WORK_HOUR_COST = args.get("work_hour_cost") if not None else str(config.WORK_HOUR_COST)
-    config.PER_PRODUCT_COST = args.get("per_product_cost") if not None else str(config.PER_PRODUCT_COST)
-    config.AREA_1 = args.get("area_1") if not None else str(config.AREA_1)
-    config.AREA_2 = args.get("area_2") if not None else str(config.AREA_2)
-    config.AREA_3 = args.get("area_3") if not None else str(config.AREA_3)
-    config.AREA_4 = args.get("area_4") if not None else str(config.AREA_4)
-    config.AREA_5 = args.get("area_5") if not None else str(config.AREA_5)
-    return func_resp(msg="Values updated", data=[], status=200)
+    if args is not None:
+        config.WORK_HOUR_COST = args.get("work_hour_cost") if not None else str(config.WORK_HOUR_COST)
+        config.PER_PRODUCT_COST = args.get("per_product_cost") if not None else str(config.PER_PRODUCT_COST)
+        config.AREA_1 = args.get("area_1") if not None else str(config.AREA_1)
+        config.AREA_2 = args.get("area_2") if not None else str(config.AREA_2)
+        config.AREA_3 = args.get("area_3") if not None else str(config.AREA_3)
+        config.AREA_4 = args.get("area_4") if not None else str(config.AREA_4)
+        config.AREA_5 = args.get("area_5") if not None else str(config.AREA_5)
+        return func_resp(msg="Values updated", data=[], status=200)
+    else:
+        config.WORK_HOUR_COST = str(190 / 8)
+        config.PER_PRODUCT_COST = "18"
+        config.AREA_1 = "0"
+        config.AREA_2 = "4"
+        config.AREA_3 = "8"
+        config.AREA_4 = "14"
+        config.AREA_5 = "16"
+    data = {
+        "work_hour_cost": str(190 / 8),
+        "per_product_cost": "18",
+        "area_1": "0",
+        "area_2": "4",
+        "area_3": "8",
+        "area_4": "14",
+        "area_5": "16"
+    }
+    return func_resp(msg="Values reset", data=data, status=200)
 
 
 # @token_required
@@ -60,10 +79,9 @@ def costing_related_methods(event, context):
 
     if method == "POST":
         body = event.get("body")
-        status, msg, data = check_request_post(headers, body)
-        if status == 200:
+        if body is not None:
             body = json.loads(body)
-            status, msg, data = register_new_costing(body)
+        status, msg, data = register_new_costing(body)
         return api_resp(msg=msg, data=data, status=status)
 
     else:

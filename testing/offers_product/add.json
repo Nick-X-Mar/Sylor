@@ -1,0 +1,52 @@
+{
+   "version":"2.0",
+   "routeKey":"PUT /offers_product/edit",
+   "rawPath":"/offers_product/edit",
+   "rawQueryString":"offer_product_key=46e5ee52-93af-46f3-aa6b-b26c131d0db4",
+   "headers":{
+      "accept":"*/*",
+      "accept-encoding":"gzip, deflate, br",
+      "accept-language":"en,el-GR;q=0.9,el;q=0.8,en-GB;q=0.7",
+      "content-length":"1050",
+      "content-type":"application/json",
+      "host":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "origin":"https://iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "referer":"http://localhost:3000/offers/edit/83fc8002-e1cc-4a58-9415-3a347852b3f2/edit/specifics/46e5ee52-93af-46f3-aa6b-b26c131d0db4",
+      "sec-ch-ua":"\"Chromium\";v=\"110\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"110\"",
+      "sec-ch-ua-mobile":"?0",
+      "sec-ch-ua-platform":"\"macOS\"",
+      "sec-fetch-dest":"empty",
+      "sec-fetch-mode":"cors",
+      "sec-fetch-site":"same-origin",
+      "user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36",
+      "x-amzn-trace-id":"Root=1-63ecff0b-2eb378626b2d7ff228552407",
+      "x-forwarded-for":"127.0.0.1, 94.65.140.212",
+      "x-forwarded-host":"localhost:3000",
+      "x-forwarded-port":"443",
+      "x-forwarded-proto":"https",
+      "x_access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5pa29zIiwiZXhwIjoxNjc1MzYxOTU1fQ.P7OgzOZ6LChjXTvQnTh5HT4zSd-ChsD_n91kcC4rrt0"
+   },
+   "queryStringParameters":{
+      "offer_product_key":"46e5ee52-93af-46f3-aa6b-b26c131d0db4"
+   },
+   "requestContext":{
+      "accountId":"911894295923",
+      "apiId":"iju6pw1c3l",
+      "domainName":"iju6pw1c3l.execute-api.eu-central-1.amazonaws.com",
+      "domainPrefix":"iju6pw1c3l",
+      "http":{
+         "method":"PUT",
+         "path":"/offers_product/edit",
+         "protocol":"HTTP/1.1",
+         "sourceIp":"94.65.140.212",
+         "userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
+      },
+      "requestId":"AYzJxjuqFiAEMTA=",
+      "routeKey":"PUT /offers_product/edit",
+      "stage":"$default",
+      "time":"15/Feb/2023:15:49:31 +0000",
+      "timeEpoch":1676476171040
+   },
+   "body":"{\"product\":\"5f567132-598f-4926-90f7-7ec34333670e\",\"extra_yalo_1\":\"a3f7073c-c374-47f2-bad3-3d56770ffa2e\",\"extra_yalo_1_amount\":\"15\",\"extra_yalo_2\":\"\",\"extra_yalo_3\":\"\",\"extra_yalo_4\":\"\",\"extra_yalo_5\":\"\",\"extra_yalo_6\":\"\",\"extra_yalo_7\":\"\",\"extra_yalo_8\":\"\",\"extra_yalo_9\":\"\",\"extra_yalo_10\":\"\",\"extra_yalo_11\":\"\",\"extra_yalo_12\":\"\",\"extra_yalo_2_amount\":\"0\",\"extra_yalo_3_amount\":\"0\",\"extra_yalo_4_amount\":\"0\",\"extra_yalo_5_amount\":\"0\",\"extra_yalo_6_amount\":\"0\",\"extra_yalo_7_amount\":\"0\",\"extra_yalo_8_amount\":\"0\",\"extra_yalo_9_amount\":\"0\",\"extra_yalo_10_amount\":\"0\",\"extra_yalo_11_amount\":\"0\",\"extra_yalo_12_amount\":\"0\",\"extra_patzoy_1_1\":\"05a37104-a0e0-409e-91ae-368d7295f0ad\",\"extra_patzoy_1_2\":\"\",\"extra_patzoy_2\":\"\",\"extra_patzoy_3\":\"\",\"extra_patzoy_4\":\"\",\"extra_patzoy_5\":\"\",\"extra_patzoy_6\":\"\",\"extra_patzoy_7\":\"\",\"extra_patzoy_1_1_amount\":\"50\",\"extra_patzoy_1_2_amount\":\"0\",\"extra_patzoy_2_amount\":\"0\",\"extra_patzoy_3_amount\":\"0\",\"extra_patzoy_4_amount\":\"0\",\"extra_patzoy_5_amount\":\"0\",\"extra_patzoy_6_amount\":\"0\",\"extra_patzoy_7_amount\":\"0\"}",
+   "isBase64Encoded":false
+}
