@@ -10,6 +10,7 @@ DYNAMODB_CLIENTS_TABLE = "sylorClients"
 DYNAMODB_OFFERS_TABLE = "sylorOffers"
 DYNAMODB_OFFERS_PRODUCT_TABLE = "sylorOffersProduct"
 DYNAMODB_EXTRA_COSTINGS_TABLE = "sylorExtraCostings"
+DYNAMODB_OFFER_COSTING_TABLE = "sylorOfferCostings"
 
 # JWT
 JWT_SECRET = 'rover1-qualifier-unplowed-rebalance-wobble'

@@ -135,6 +135,17 @@ provider:
       Resource:
         - { "Fn::GetAtt": [ "sylorExtraCostings", "Arn" ] }
 
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "sylorOfferCostings", "Arn" ] }
+
 functions:
 #  resize:
 #    handler: resize.handler
@@ -323,6 +334,22 @@ functions:
           method: 'POST'
           path: /costing/registration
 
+  offer_costing_management:
+    handler: endpoints/offer_costing/offer_costing.offer_costing_related_methods
+    events:
+      - httpApi:
+          method: 'GET'
+          path: /offer_costing
+      - httpApi:
+          method: 'GET'
+          path: /offer_costing/offer_id
+      - httpApi:
+          method: 'POST'
+          path: /offer_costing/registration
+      - httpApi:
+          method: 'DELETE'
+          path: /offer_costing/delete
+
 resources:
   Resources:
     SylorImgBucket:
@@ -330,6 +357,20 @@ resources:
       Properties:
         BucketName: sylorimgbucket
         AccessControl: PublicRead
+
+    sylorOfferCostings:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: sylorOfferCostings
+        AttributeDefinitions:
+          - AttributeName: offer_costing_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: offer_costing_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
     sylorExtraCostings:
       Type: AWS::DynamoDB::Table
