@@ -313,7 +313,7 @@ functions:
           path: /extra_costings/id
       - httpApi:
           method: 'GET'
-          path: /extra_costings/translation_id
+          path: /extra_costings/typologyId
       - httpApi:
           method: 'POST'
           path: /extra_costings/registration
@@ -339,7 +339,7 @@ functions:
     events:
       - httpApi:
           method: 'GET'
-          path: /offer_costing
+          path: /offer_costing/id
       - httpApi:
           method: 'GET'
           path: /offer_costing/offer_id
@@ -347,8 +347,11 @@ functions:
           method: 'POST'
           path: /offer_costing/registration
       - httpApi:
-          method: 'DELETE'
-          path: /offer_costing/delete
+          method: 'PUT'
+          path: /offer_costing/edit
+#      - httpApi:
+#          method: 'DELETE'
+#          path: /offer_costing/delete
 
 resources:
   Resources:

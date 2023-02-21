@@ -42,14 +42,14 @@ def get_costing_by_id(headers, extra_costing_id):
         return func_resp(msg="Failed to retrieve costing.", data=[], status=400)
 
 
-def get_costing_by_type(headers, translation_id):
+def get_costing_by_type(headers, typologyId):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_EXTRA_COSTINGS_TABLE)
-    if translation_id is not None:
-        resp = table.scan(FilterExpression=Attr('translation_id').eq(translation_id))
+    if typologyId is not None:
+        resp = table.scan(FilterExpression=Attr('typologyId').eq(typologyId))
     else:
         resp = table.scan()
     results = resp['Items']
@@ -65,22 +65,23 @@ def register_new_costing(extra_costings):
         return func_resp(msg=client, data=[], status=status)
 
     table = client.Table(DYNAMODB_EXTRA_COSTINGS_TABLE)
-    extra_costing_id = uuid.uuid4()
-    item = {'extra_costing_id': str(extra_costing_id)}
-    for key, value in extra_costings.items():
-        item[key] = value
-    # print(f"Item: {item}")
-    try:
-        table.put_item(
-            Item=item,
-            ConditionExpression='attribute_not_exists(extra_costing_id)'
-        )
-        return func_resp(msg="Costing Registered", data=[], status=200)
-    except exceptions.ParamValidationError as error:
-        print('The parameters you provided are incorrect: {}'.format(error))
-        return func_resp(msg="Registration not completed.", data=[], status=400)
-    except:
-        return func_resp(msg="Registration not completed.", data=[], status=400)
+    for extra_costing in extra_costings:
+        extra_costing_id = uuid.uuid4()
+        item = {'extra_costing_id': str(extra_costing_id)}
+        for key, value in extra_costing.items():
+            item[key] = value
+        # print(f"Item: {item}")
+        try:
+            table.put_item(
+                Item=item,
+                ConditionExpression='attribute_not_exists(extra_costing_id)'
+            )
+        except exceptions.ParamValidationError as error:
+            print('The parameters you provided are incorrect: {}'.format(error))
+            return func_resp(msg="Registration not completed.", data=[], status=400)
+        except:
+            return func_resp(msg="Registration not completed.", data=[], status=400)
+    return func_resp(msg="Costings Registered", data=[], status=200)
 
 
 def update_costing(extra_costing_id, extra_costings):
@@ -184,6 +185,34 @@ def check_request_put(headers, extra_costing_id, body):
     # return func_resp(msg=msg, data=data, status=status)
 
 
+def handle_extra_costings(body):
+    _create = body.get('create')
+    _update = body.get('update')
+    _delete = body.get('delete')
+    status = 200
+    msg = ""
+    print(_delete)
+    if _create is not None:
+        status, msg, data = register_new_costing(_create)
+        if status != 200:
+            return func_resp(msg=msg, data=[], status=status)
+
+    if _update is not None:
+        for u in _update:
+            status, msg, _ = update_costing(u.get('extra_costing_id'), u)
+        if status != 200:
+            return func_resp(msg=msg, data=[], status=status)
+
+    if _delete is not None:
+        for d in _delete:
+            print(d.get('extra_costing_id'))
+            status, msg, _ = delete_costing(d.get('extra_costing_id'))
+        if status != 200:
+            return func_resp(msg=msg, data=[], status=status)
+
+    return func_resp(msg="Success", data=[], status=200)
+
+
 # @token_required
 def extra_costings_related_methods(event, context):
     print(event)
@@ -198,11 +227,11 @@ def extra_costings_related_methods(event, context):
                 status, msg, data = get_costing_by_id(headers, extra_costing_id)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="extra_costing_id not specified", data=[], status=400)
-        elif event.get("rawPath") == '/extra_costings/translation_id':
-            translation_id = event.get("queryStringParameters", {'translation_id': None}).get("translation_id")
-            if translation_id is not None and translation_id != "":
+        elif event.get("rawPath") == '/extra_costings/typologyId':
+            typologyId = event.get("queryStringParameters", {'typologyId': None}).get("typologyId")
+            if typologyId is not None and typologyId != "":
                 # print(get_user_username(username))
-                status, msg, data = get_costing_by_type(headers, translation_id)
+                status, msg, data = get_costing_by_type(headers, typologyId)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="costing_type not specified", data=[], status=400)
         status, msg, data = get_all_extra_costings(headers)
@@ -213,24 +242,24 @@ def extra_costings_related_methods(event, context):
         status, msg, data = check_request_post(headers, body)
         if status == 200:
             body = json.loads(body)
-            status, msg, data = register_new_costing(body)
+            status, msg, data = handle_extra_costings(body)
         return api_resp(msg=msg, data=data, status=status)
 
-    elif method == "PUT":
-        extra_costing_id = event.get("queryStringParameters", {'extra_costing_id': None}).get("extra_costing_id")
-        body = event.get("body")
-        status, msg, data = check_request_put(headers, extra_costing_id, body)
-        if status == 200:
-            body = json.loads(body)
-            status, msg, data = update_costing(extra_costing_id, body)
-        return api_resp(msg=msg, data=data, status=status)
+    # elif method == "PUT":
+    #     extra_costing_id = event.get("queryStringParameters", {'extra_costing_id': None}).get("extra_costing_id")
+    #     body = event.get("body")
+    #     status, msg, data = check_request_put(headers, extra_costing_id, body)
+    #     if status == 200:
+    #         body = json.loads(body)
+    #         status, msg, data = update_costing(extra_costing_id, body)
+    #     return api_resp(msg=msg, data=data, status=status)
     #
-    elif method == "DELETE":
-        extra_costing_id = event.get("queryStringParameters", {'extra_costing_id': None}).get("extra_costing_id")
-        status, msg, data = check_request_delete(headers, extra_costing_id)
-        if status == 200:
-            status, msg, data = delete_costing(extra_costing_id)
-        return api_resp(msg=msg, data=data, status=status)
+    # elif method == "DELETE":
+    #     extra_costing_id = event.get("queryStringParameters", {'extra_costing_id': None}).get("extra_costing_id")
+    #     status, msg, data = check_request_delete(headers, extra_costing_id)
+    #     if status == 200:
+    #         status, msg, data = delete_costing(extra_costing_id)
+    #     return api_resp(msg=msg, data=data, status=status)
 
     else:
         return api_resp(msg="Not Allowed Method", data=[], status=400)

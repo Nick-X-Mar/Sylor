@@ -35,6 +35,6 @@
       "time":"12/Jan/2023:14:56:48 +0000",
       "timeEpoch":1673535408767
    },
-   "body":"{\r\n    \"offer\": \"3875192f-70ab-44a6-a4e9-4f3eac0f3162\",\r\n    \"product\": \"ide991dd0d-7481-4f7a-badc-7bbf6f5876c0\",\r\n    \"quantity\": 5,\r\n    \"x\": 1.1,\r\n    \"y\": 1.2,\r\n    \"z\": 1.1,\r\n    \"unit_amount\": 110.50,\r\n    \"offer_position\": 1\r\n}",
+   "body":"{\r\n    \"offer\": \"83fc8002-e1cc-4a58-9415-3a347852b3f2\",\r\n    \"product\": \"5a705546-61b3-456f-9eb7-3c368fc7f443\",\r\n    \"quantity\": 5,\r\n    \"x\": 1.1,\r\n    \"y\": 1.2,\r\n    \"z\": 1.1,\r\n    \"unit_amount\": 110.50,\r\n    \"offer_position\": 1\r\n}",
    "isBase64Encoded":false
 }

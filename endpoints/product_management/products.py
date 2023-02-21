@@ -5,11 +5,12 @@ import uuid
 from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource, connect_to_dynamodb
-from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE
+from config.config import DYNAMODB_PRODUCTS_TABLE, DYNAMODB_TRANSLATIONS_TABLE, DYNAMODB_EXTRA_COSTINGS_TABLE
 # from endpoints.get_single_user import execute_get_user_by_username
 from endpoints.offers_product_management.offers_product import register_new_offer_product
 from endpoints.translations_helper import connect_ids_with_translations
 from endpoints.get_single_product import get_product_by_id
+from boto3.dynamodb.conditions import Key, Attr
 
 
 def get_all_products(headers, fav):
@@ -59,8 +60,10 @@ def get_all_products(headers, fav):
 #         return func_resp(msg=msg, data=data[0], status=status)
 
 
-def store_file_aws(key, file):
-    print(file)
+# def store_file_aws(key, file):
+#     print(file)
+
+
 
 
 def _create_product(headers, product):
@@ -68,12 +71,15 @@ def _create_product(headers, product):
     if status != 200:
         return func_resp(msg=client, data=[], status=status), None
 
+
+
     product_key = str(uuid.uuid4())
     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
     item = {
         'product_key': product_key,
         'product_name': product.get('product_name'),
         'typology': product.get('typology'),
+        'placement_h': product.get('placement_h'),
         'img': product.get('img'),
         'img_uid': product.get('img_uid'),
         'typology_1': product.get('typology_1'),
@@ -260,6 +266,12 @@ def update_product(headers, product_key, body):
         upEx += " typology_5 = :typology_5"
         attValues[":typology_5"] = body.get('typology_5')
         last = True
+    if body.get('placement_h') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " placement_h = :placement_h"
+        attValues[":placement_h"] = body.get('placement_h')
+        last = True
     if body.get('typology_6') is not None:
         if last is True:
             upEx += ","
@@ -343,7 +355,8 @@ def check_request_put(headers, product_key, args):
     typology_5 = args.get('typology_5')
     typology_6 = args.get('typology_6')
 
-    if all(item is None for item in [product_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
+    if all(item is None for item in
+           [product_name, img, typology, typology_1, typology_2, typology_5, typology_3, typology_4, typology_6]):
         return func_resp(msg='Please complete all required fields.', data=[], status=400)
 
     # if args.get('fav') is True or args.get('fav') == "true":
@@ -401,7 +414,6 @@ def product_related_methods(event, context):
 
     else:
         return api_resp(msg="Not Allowed Method", data=[], status=400)
-
 
 # if __name__ == "__main__":
 #     check_request_post("a", "v")

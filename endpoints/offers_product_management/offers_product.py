@@ -3,7 +3,7 @@ import uuid
 from botocore import exceptions
 from authenticate.validate_response import func_resp, api_resp
 from databases.dbs import connect_to_dynamodb_resource
-from config.config import DYNAMODB_OFFERS_PRODUCT_TABLE
+from config.config import DYNAMODB_OFFERS_PRODUCT_TABLE, DYNAMODB_EXTRA_COSTINGS_TABLE, DYNAMODB_PRODUCTS_TABLE
 from endpoints.get_single_product import get_product_by_id, get_products_by_id_list
 from endpoints.translations_helper import connect_ids_with_translations
 from boto3.dynamodb.conditions import Key, Attr
@@ -82,13 +82,54 @@ def get_offer_by_id(headers, offer_product_key):
         return func_resp(msg=msg, data=data[0], status=status)
 
 
+def get_extra_costings(headers, dynamodb, p_id, m2):
+    # table = dynamodb.Table(DYNAMODB_PRODUCTS_TABLE)
+    # print(f"product_id: {p_id}")
+    status, msg, data = get_product_by_id(headers=headers, product_key=p_id, translation=False, lang='el')
+    # print(msg)
+    # print(m2)
+    if status == 200:
+        # print(f"data.get('product_name'): {data.get('product_name')}")
+        # print(f"data.get('typology'): {data.get('typology')}")
+        table = dynamodb.Table(DYNAMODB_EXTRA_COSTINGS_TABLE)
+        results = table.scan(FilterExpression=(Attr('productId').eq(data.get('product_name')) and Attr('typologyId').eq(data.get('typology'))))
+        # print(results)
+        results = results.get('Items')
+        charge = 0
+        charge_limit = 1000
+        if results is not None and len(results) > 0:
+            for res in results:
+                # print(res)
+                # print(m2 < float(res.get('m2_limit')))
+                if m2 < float(res.get('m2_limit')):
+                    # print(f'm2_limit: {res.get("m2_limit")} < charge_limit: {charge_limit}  ')
+                    # print(float(res.get('m2_limit')) < charge_limit)
+                    if float(res.get('m2_limit')) <= charge_limit:
+                        charge_limit = float(res.get('m2_limit'))
+                        charge = float(res.get('extra_cost'))
+                        # print(charge)
+        return charge
+    else:
+        return False
+
+
 def register_new_offer_product(headers, offer_product, replicas=1):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
+    # todo: With the given product name(productId --> name) get of extra costings
+    # find the extra costings for the placement for these typologies and add it to placement_h
+    extra_cost = 0
+    if offer_product.get('x') is not None and offer_product.get('y') is not None:
+        extra_cost = get_extra_costings(headers, client, offer_product.get('product'), (float(offer_product.get('x')) * float(offer_product.get('y'))))
+        print(extra_cost)
+        if extra_cost is False:
+            return func_resp(msg="Error during fetching", data=[], status=400)
+
     table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     item = {
+        'extra_costing_m2': str(extra_cost),
         # 'offer_product_key': str(uuid.uuid4()),
         'offer': str(offer_product.get('offer')),
         'product': str(offer_product.get('product')),
@@ -96,7 +137,7 @@ def register_new_offer_product(headers, offer_product, replicas=1):
         'x': str(offer_product.get('x')),
         'y': str(offer_product.get('y')),
         'z': str(offer_product.get('z')),
-        "set_time": str(offer_product.get("set_time")),
+        # "set_time": str(offer_product.get("set_time")),
         'unit_amount': str(offer_product.get('unit_amount')),
         'offer_product_code': str(offer_product.get('offer_product_code'))
     }
@@ -160,6 +201,12 @@ def update_offer_product(headers, offer_product_key, body):
     upEx = "set "
     last = False
     attValues = {}
+    if body.get('product') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " product = :product"
+        attValues[":product"] = str(body.get('product'))
+        last = True
     if body.get('quantity') is not None:
         if last is True:
             upEx += ","
@@ -545,9 +592,22 @@ def update_offer_product(headers, offer_product_key, body):
             attValues[":total_char_amount"] = str(format(float(total_char_amount) * int(quantity), '.2f'))
         else:
             attValues[":total_char_amount"] = str(total_char_amount)
+        last = True
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
+
+    extra_cost = get_extra_costings(headers, client, body.get('product'), (float(body.get('x')) * float(body.get('y'))))
+    # print(f"extra_cost: {extra_cost}")
+    if extra_cost is False:
+        return func_resp(msg="Error during fetching", data=[], status=400)
+
+    # if body.get('extra_costing_m2') is not None:
+    if last is True:
+        upEx += ","
+    upEx += " extra_costing_m2 = :extra_costing_m2"
+    attValues[":extra_costing_m2"] = str(extra_cost)
+        # last = True
 
     try:
         table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
@@ -637,7 +697,7 @@ def offers_product_related_methods(event, context):
     if method == "GET":
         if event.get("rawPath") == '/offers_product/id':
             offer_product_key = event.get("queryStringParameters", {'offer_product_key': None}).get("offer_product_key")
-            if offer_product_key is not None and offer_product_key !=  "":
+            if offer_product_key is not None and offer_product_key != "":
                 status, msg, data = get_offer_by_id(headers, offer_product_key)
                 return api_resp(msg=msg, data=data, status=status)
             return api_resp(msg="offer_product_key not specified", data=[], status=400)
