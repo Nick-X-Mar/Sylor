@@ -26,3 +26,4 @@ AREA_2 = "4"
 AREA_3 = "8"
 AREA_4 = "14"
 AREA_5 = "16"
+PALETE_COST = 150

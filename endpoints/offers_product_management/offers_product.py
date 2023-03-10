@@ -131,14 +131,14 @@ def register_new_offer_product(headers, offer_product, replicas=1):
     item = {
         'extra_costing_m2': str(extra_cost),
         # 'offer_product_key': str(uuid.uuid4()),
-        'offer': str(offer_product.get('offer')),
+        'offer': str(offer_product.get('offer')) if offer_product.get('offer') is not None else str(0),
         'product': str(offer_product.get('product')),
-        'quantity': str(offer_product.get('quantity')),
-        'x': str(offer_product.get('x')),
-        'y': str(offer_product.get('y')),
-        'z': str(offer_product.get('z')),
+        'quantity': str(offer_product.get('quantity')) if offer_product.get('quantity') is not None else str(1),
+        'x': str(offer_product.get('x')) if offer_product.get('x') is not None else str(0),
+        'y': str(offer_product.get('y')) if offer_product.get('y') is not None else str(0),
+        'z': str(offer_product.get('z')) if offer_product.get('z') is not None else str(0),
         # "set_time": str(offer_product.get("set_time")),
-        'unit_amount': str(offer_product.get('unit_amount')),
+        'unit_amount': str(offer_product.get('unit_amount')) if offer_product.get('unit_amount') is not None else str(0),
         'offer_product_code': str(offer_product.get('offer_product_code'))
     }
     if offer_product.get('unit_amount') is not None and offer_product.get('quantity') is not None:
@@ -201,6 +201,25 @@ def update_offer_product(headers, offer_product_key, body):
     upEx = "set "
     last = False
     attValues = {}
+    if body.get('total_unit_amount') is not None and body.get('total_unit_amount') != "":
+        if last is True:
+            upEx += ","
+        upEx += " total_unit_amount = :total_unit_amount"
+        attValues[":total_unit_amount"] = str(body.get('total_unit_amount'))
+        last = True
+    if body.get('extra_splitted_cost') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_splitted_cost = :extra_splitted_cost"
+        attValues[":extra_splitted_cost"] = str(body.get('extra_splitted_cost'))
+        last = True
+
+    if body.get('total_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " total_amount = :total_amount"
+        attValues[":total_amount"] = str(body.get('total_amount'))
+        last = True
     if body.get('product') is not None:
         if last is True:
             upEx += ","
@@ -597,17 +616,18 @@ def update_offer_product(headers, offer_product_key, body):
     if status != 200:
         return func_resp(msg=client, data=[], status=status)
 
-    extra_cost = get_extra_costings(headers, client, body.get('product'), (float(body.get('x')) * float(body.get('y'))))
-    # print(f"extra_cost: {extra_cost}")
-    if extra_cost is False:
-        return func_resp(msg="Error during fetching", data=[], status=400)
+    if body.get('x') is not None and body.get('x') != "None" and body.get('y') is not None and body.get('y') != "None":
+        extra_cost = get_extra_costings(headers, client, body.get('product'), (float(body.get('x')) * float(body.get('y'))))
+        # print(f"extra_cost: {extra_cost}")
+        if extra_cost is False:
+            return func_resp(msg="Error during fetching", data=[], status=400)
 
-    # if body.get('extra_costing_m2') is not None:
-    if last is True:
-        upEx += ","
-    upEx += " extra_costing_m2 = :extra_costing_m2"
-    attValues[":extra_costing_m2"] = str(extra_cost)
-        # last = True
+        # if body.get('extra_costing_m2') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " extra_costing_m2 = :extra_costing_m2"
+        attValues[":extra_costing_m2"] = str(extra_cost)
+            # last = True
 
     try:
         table = client.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)

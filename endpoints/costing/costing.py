@@ -12,7 +12,8 @@ def get_all_extra_costings(headers):
         "area_2": config.AREA_2,
         "area_3": config.AREA_3,
         "area_4": config.AREA_4,
-        "area_5": config.AREA_5
+        "area_5": config.AREA_5,
+        "palete_cost": config.PALETE_COST
     }
     return func_resp(msg="", data=data, status=200)
 
@@ -27,6 +28,7 @@ def register_new_costing(args):
         config.AREA_3 = args.get("area_3") if not None else str(config.AREA_3)
         config.AREA_4 = args.get("area_4") if not None else str(config.AREA_4)
         config.AREA_5 = args.get("area_5") if not None else str(config.AREA_5)
+        config.PALETE_COST = args.get("palete_cost") if not None else str(config.PALETE_COST)
         return func_resp(msg="Values updated", data=[], status=200)
     else:
         config.WORK_HOUR_COST = str(190 / 8)
@@ -36,6 +38,7 @@ def register_new_costing(args):
         config.AREA_3 = "8"
         config.AREA_4 = "14"
         config.AREA_5 = "16"
+        config.PALETE_COST = 150
     data = {
         "work_hour_cost": str(190 / 8),
         "per_product_cost": "18",
@@ -43,7 +46,8 @@ def register_new_costing(args):
         "area_2": "4",
         "area_3": "8",
         "area_4": "14",
-        "area_5": "16"
+        "area_5": "16",
+        "palete_cost": "150"
     }
     return func_resp(msg="Values reset", data=data, status=200)
 

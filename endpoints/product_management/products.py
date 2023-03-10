@@ -64,22 +64,20 @@ def get_all_products(headers, fav):
 #     print(file)
 
 
-
-
 def _create_product(headers, product):
     client, status = connect_to_dynamodb_resource()
     if status != 200:
         return func_resp(msg=client, data=[], status=status), None
 
-
-
     product_key = str(uuid.uuid4())
     table = client.Table(DYNAMODB_PRODUCTS_TABLE)
     item = {
+        # str(format(float(float(args.get("area")) * int(args.get("people")) * float(config.WORK_HOUR_COST) + int(
+        #     grouped_products.get('total_days_needed'))), '.2f'))
         'product_key': product_key,
         'product_name': product.get('product_name'),
         'typology': product.get('typology'),
-        'placement_h': product.get('placement_h'),
+        'placement_h': str(format(float(product.get('placement_h')), '.2f')) if product.get('placement_h') is not None else '0',
         'img': product.get('img'),
         'img_uid': product.get('img_uid'),
         'typology_1': product.get('typology_1'),
@@ -199,10 +197,9 @@ def delete_product(headers, product_key):
 
 
 def update_product(headers, product_key, body):
-    status, msg, data = get_product_by_id(headers, product_key)
-    if data.get('fav') is True or data.get('fav') == "true":
-        return func_resp(msg='Cannot update favorites.', data=[], status=400)
-
+    # status, msg, data = get_product_by_id(headers, product_key)
+    # if data.get('fav') is True or data.get('fav') == "true":
+    #     return func_resp(msg='Cannot update favorites.', data=[], status=400)
     upEx = "set "
     last = False
     attValues = {}
@@ -266,12 +263,12 @@ def update_product(headers, product_key, body):
         upEx += " typology_5 = :typology_5"
         attValues[":typology_5"] = body.get('typology_5')
         last = True
-    if body.get('placement_h') is not None:
-        if last is True:
-            upEx += ","
-        upEx += " placement_h = :placement_h"
-        attValues[":placement_h"] = body.get('placement_h')
-        last = True
+    # if body.get('placement_h') is not None:
+    if last is True:
+        upEx += ","
+    upEx += " placement_h = :placement_h"
+    attValues[":placement_h"] = str(format(float(body.get('placement_h')), '.2f')) if body.get('placement_h') is not None else '0'
+    last = True
     if body.get('typology_6') is not None:
         if last is True:
             upEx += ","
@@ -367,7 +364,7 @@ def check_request_put(headers, product_key, args):
 
 # @token_required
 def product_related_methods(event, context):
-    # print(event)
+    print(event)
     method = event.get("requestContext").get("http").get("method")
     # print(method)
     headers = event.get('headers')

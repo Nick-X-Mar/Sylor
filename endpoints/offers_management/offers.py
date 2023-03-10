@@ -68,14 +68,16 @@ def register_new_offer(offer):
         'customer_name': offer.get('customer_name'),
         'offer_constructor': offer.get('offer_constructor'),
         'username': offer.get('username'),
-        'charge': str(offer.get('charge')),
-        'discount': str(offer.get('discount')),
+        'charge': str(offer.get('charge')) if offer.get('charge') is not None and offer.get('fpa') != "" else str(0),
+        'discount': str(offer.get('discount')) if offer.get('discount') is not None and offer.get('fpa') != "" else str(0),
         'offer_amount': str(offer.get('offer_amount')),
-        'fpa': str(offer.get('fpa')),
+        'fpa': str(offer.get('fpa')) if offer.get('fpa') is not None and offer.get('fpa') != "" else str(0),
         'offer_to': offer.get('offer_to'),
         'info_el': offer.get('info_el'),
         'info_en': offer.get('info_en'),
         'info_it': offer.get('info_it'),
+        'offer_fpa_amount': str(0),
+        'offer_discount_amount': str(0)
         # 'costs': offer.get('costs'),
         # 'charges': offer.get('charges'),
     }
@@ -149,6 +151,25 @@ def update_offer(offer_key, body):
     upEx = "set "
     last = False
     attValues = {}
+
+    if body.get('offer_products_chars_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " offer_products_chars_amount = :offer_products_chars_amount"
+        attValues[":offer_products_chars_amount"] = str(body.get('offer_products_chars_amount'))
+        last = True
+    if body.get('offer_fpa_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " offer_fpa_amount = :offer_fpa_amount"
+        attValues[":offer_fpa_amount"] = str(body.get('offer_fpa_amount'))
+        last = True
+    if body.get('offer_discount_amount') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " offer_discount_amount = :offer_discount_amount"
+        attValues[":offer_discount_amount"] = str(body.get('offer_discount_amount'))
+        last = True
     if body.get('offer_id') is not None:
         if last is True:
             upEx += ","

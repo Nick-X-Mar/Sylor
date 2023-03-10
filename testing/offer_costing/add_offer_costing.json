@@ -34,6 +34,6 @@
       "time":"21/Feb/2023:17:42:43 +0000",
       "timeEpoch":1677001363812
    },
-   "body":"{\n    \"area\": \"area_3\",\n    \"people\": 2,\n    \"offer\": \"5415e8e7-092d-40c7-b890-e0ec247dfd5a\"\n}",
+   "body":"{\n    \"area\": \"14\",\n    \"people\": 4,\n    \"offer\": \"e61306a3-db68-4734-ac9d-e822afdec6ef\"\n}",
    "isBase64Encoded":false
 }
