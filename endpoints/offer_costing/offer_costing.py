@@ -344,30 +344,72 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
     offer_product_table = dynamodb.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     results = offer_product_table.scan(FilterExpression=Attr('offer').eq(offer)).get('Items')
     # print(f"Len products {len(results)}")
+    grouped_chars = {
+        "extra_patzoy_1_1_amount": 0,
+        "extra_patzoy_1_2_amount": 0,
+        "extra_patzoy_2_amount": 0,
+        "extra_patzoy_3_amount": 0,
+        "extra_patzoy_4_amount": 0,
+        "extra_patzoy_5_amount": 0,
+        "extra_patzoy_6_amount": 0,
+        "extra_patzoy_7_amount": 0,
+        "extra_yalo_1_amount": 0,
+        "extra_yalo_2_amount": 0,
+        "extra_yalo_3_amount": 0,
+        "extra_yalo_4_amount": 0,
+        "extra_yalo_5_amount": 0,
+        "extra_yalo_6_amount": 0,
+        "extra_yalo_7_amount": 0,
+        "extra_yalo_8_amount": 0,
+        "extra_yalo_9_amount": 0,
+        "extra_yalo_10_amount": 0,
+        "extra_yalo_11_amount": 0,
+        "extra_yalo_12_amount": 0
+    }
     offer_products_chars_amount = 0
+    offer_product_body = {}
     if results is not None and len(results) > 0:
         for offer_product in results:
+            last_charge_percentage = 1 + float(offer_product.get("last_charge")) if offer_product.get("last_charge") is not None else 1.00
+            print(f"offer_product.get('last_charge'): {offer_product.get('last_charge')}")
+            print(f"last_charge_percentage: {last_charge_percentage}")
+            print(f"charge: {charge}")
+            offer_product_body["last_charge"] = charge
             items = int(offer_product.get("quantity")) if offer_product.get("quantity") is not None else 1
             if offer_product.get("extra_patzoy_1_1_amount") is not None:
                 try:
                     am = float(offer_product.get("extra_patzoy_1_1_amount"))
                     offer_products_chars_amount += am * items
+                    grouped_chars["extra_patzoy_1_1_amount"] += am * items
+                    print(f"offer_product.get('extra_patzoy_1_1_amount'): {offer_product.get('extra_patzoy_1_1_amount')}")
+                    offer_product_body["extra_patzoy_1_1_amount"] = (am / last_charge_percentage) * charge * items
+                    print(f" offer_product_body['extra_patzoy_1_1_amount']: { offer_product_body['extra_patzoy_1_1_amount']}")
                 except:
                     pass
             if offer_product.get("extra_patzoy_1_2_amount") is not None:
                 try:
                     am = float(offer_product.get("extra_patzoy_1_2_amount"))
                     offer_products_chars_amount += am * items
+                    grouped_chars["extra_patzoy_1_2_amount"] += am * items
+                    offer_product_body["extra_patzoy_1_2_amount"] = (am / last_charge_percentage) * charge * items
                 except:
                     pass
             for i in range(12):  # 0 11
                 try:
                     am = float(offer_product.get(f"extra_yalo_{i + 1}_amount"))
                     offer_products_chars_amount += am * items
+                    grouped_chars[f"extra_yalo_{i + 1}_amount"] += am * items
+                    offer_product_body[f"extra_yalo_{i + 1}_amount"] = (am / last_charge_percentage) * charge * items
                     am = float(offer_product.get(f"extra_patzoy_{i + 1}_amount"))
                     offer_products_chars_amount += am * items
+                    grouped_chars[f"extra_patzoy_{i + 1}_amount"] += am * items
+                    offer_product_body[f"extra_patzoy_{i + 1}_amount"] = (am / last_charge_percentage) * charge * items
                 except:
                     pass
+
+            status1, msg1, data1 = update_offer_product(headers, offer_product.get('offer_product_key'), offer_product_body)
+            if status1 != 200:
+                return func_resp(msg=msg1, data=[], status=status1)
 
             status, msg, product = get_product_by_id(headers=headers, product_key=offer_product.get('product'), translation=False, lang='el')
             print(product.get('product_name'))
@@ -485,6 +527,7 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
     if status != 200:
         return func_resp(msg=msg, data=[], status=status)
 
+    grouped_products["chars"] = grouped_chars
     return func_resp(msg="", data=grouped_products, status=200)
 
 

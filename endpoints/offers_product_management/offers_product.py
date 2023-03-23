@@ -202,6 +202,12 @@ def update_offer_product(headers, offer_product_key, body):
     upEx = "set "
     last = False
     attValues = {}
+    if body.get('last_charge') is not None and body.get('last_charge') != "":
+        if last is True:
+            upEx += ","
+        upEx += " last_charge = :last_charge"
+        attValues[":last_charge"] = str(body.get('last_charge'))
+        last = True
     if body.get('total_unit_amount') is not None and body.get('total_unit_amount') != "":
         if last is True:
             upEx += ","
