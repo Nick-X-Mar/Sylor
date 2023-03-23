@@ -70,7 +70,7 @@ def register_new_offer(offer):
         'username': offer.get('username'),
         'charge': str(offer.get('charge')) if offer.get('charge') is not None and offer.get('fpa') != "" else str(0),
         'discount': str(offer.get('discount')) if offer.get('discount') is not None and offer.get('fpa') != "" else str(0),
-        'offer_amount': str(offer.get('offer_amount')),
+        'offer_amount': str(offer.get('offer_amount')) if offer.get('offer_amount') is not None and offer.get('offer_amount') != "" else str(0),
         'fpa': str(offer.get('fpa')) if offer.get('fpa') is not None and offer.get('fpa') != "" else str(0),
         'offer_to': offer.get('offer_to'),
         'info_el': offer.get('info_el'),

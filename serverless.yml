@@ -23,6 +23,7 @@ provider:
 #      name: my-custom-bucket-name
 
   name: aws
+  versionFunctions: false
   runtime: python3.9
   region: eu-central-1
   memorySize: 128

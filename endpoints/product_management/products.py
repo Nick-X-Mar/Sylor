@@ -87,6 +87,8 @@ def _create_product(headers, product):
         'typology_5': product.get('typology_5'),
         'typology_6': product.get('typology_6'),
         'fav': product.get('fav') if product.get('fav') is not None else False,
+        'img_w': product.get('img_w') if product.get('img_w') is not None else "0",
+        'img_h': product.get('img_h') if product.get('img_h') is not None else "0",
     }
 
     try:
@@ -203,6 +205,18 @@ def update_product(headers, product_key, body):
     upEx = "set "
     last = False
     attValues = {}
+    if body.get('img_h') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " img_h = :img_h"
+        attValues[":img_h"] = body.get('img_h')
+        last = True
+    if body.get('img_w') is not None:
+        if last is True:
+            upEx += ","
+        upEx += " img_w = :img_w"
+        attValues[":img_w"] = body.get('img_w')
+        last = True
     if body.get('product_name') is not None:
         if last is True:
             upEx += ","
