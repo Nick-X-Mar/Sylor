@@ -345,50 +345,62 @@ def combine_grouped_chars(grouped_chars):
         if k in config.CHARS_CAT_SITA:
             if grouped_chars.get("cat_sita") is None:
                 grouped_chars["cat_sita"] = v
+                grouped_chars.pop(k)
             else:
                 grouped_chars["cat_sita"]["number_of_products"] = int(grouped_chars["cat_sita"]["number_of_products"]) + int(v["number_of_products"])
                 grouped_chars["cat_sita"]["total_price"] = (float(grouped_chars["cat_sita"].get("total_price")) if grouped_chars["cat_sita"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get("total_price") is not None else 0
+                grouped_chars.pop(k)
 
         elif k in config.CHARS_CAT_MECH:
             if grouped_chars.get("cat_mech") is None:
                 grouped_chars["cat_mech"] = v
+                grouped_chars.pop(k)
             else:
                 grouped_chars["cat_mech"]["number_of_products"] = int(grouped_chars["cat_mech"]["number_of_products"]) + int(v["number_of_products"])
                 grouped_chars["cat_mech"]["total_price"] = (float(grouped_chars["cat_mech"].get("total_price")) if grouped_chars["cat_mech"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get("total_price") is not None else 0
+                grouped_chars.pop(k)
 
         elif k in config.CHARS_CAT_KAITIA:
             if grouped_chars.get("cat_kaitia") is None:
                 grouped_chars["cat_kaitia"] = v
+                grouped_chars.pop(k)
             else:
                 grouped_chars["cat_kaitia"]["number_of_products"] = int(grouped_chars["cat_kaitia"]["number_of_products"]) + int(v["number_of_products"])
                 grouped_chars["cat_kaitia"]["total_price"] = (float(grouped_chars["cat_kaitia"].get("total_price")) if grouped_chars["cat_kaitia"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get("total_price") is not None else 0
+                grouped_chars.pop(k)
 
         elif k in config.CHARS_CAT_TAMP:
             if grouped_chars.get("cat_tamp") is None:
                 grouped_chars["cat_tamp"] = v
+                grouped_chars.pop(k)
             else:
                 grouped_chars["cat_tamp"]["number_of_products"] = int(grouped_chars["cat_tamp"]["number_of_products"]) + int(v["number_of_products"])
                 grouped_chars["cat_tamp"]["total_price"] = (float(grouped_chars["cat_tamp"].get("total_price")) if grouped_chars["cat_tamp"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get("total_price") is not None else 0
+                grouped_chars.pop(k)
 
         elif k in config.CHARS_CAT_COLOR:
             if grouped_chars.get("cat_color") is None:
                 grouped_chars["cat_color"] = v
+                grouped_chars.pop(k)
             else:
                 grouped_chars["cat_color"]["number_of_products"] = int(
                     grouped_chars["cat_color"]["number_of_products"]) + int(v["number_of_products"])
                 grouped_chars["cat_color"]["total_price"] = (float(grouped_chars["cat_color"].get("total_price")) if \
                 grouped_chars["cat_color"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get(
                     "total_price") is not None else 0
+                grouped_chars.pop(k)
 
         elif k in config.CHARS_CAT_WOOD:
             if grouped_chars.get("cat_wood") is None:
                 grouped_chars["cat_wood"] = v
+                grouped_chars.pop(k)
             else:
                 grouped_chars["cat_wood"]["number_of_products"] = int(
                     grouped_chars["cat_wood"]["number_of_products"]) + int(v["number_of_products"])
                 grouped_chars["cat_wood"]["total_price"] = (float(grouped_chars["cat_wood"].get("total_price")) if \
                     grouped_chars["cat_wood"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get(
                     "total_price") is not None else 0
+                grouped_chars.pop(k)
 
     return grouped_chars
 
