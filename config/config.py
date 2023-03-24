@@ -27,3 +27,15 @@ AREA_3 = "8"
 AREA_4 = "14"
 AREA_5 = "16"
 PALETE_COST = 150
+
+PRODUCTS_CAT_YALO = ["553996cf-ec8a-43aa-840d-ebe366f964b0", "59210467-e38e-4f10-aae8-df41441c6e64"]
+PRODUCTS_CAT_PATZ = ["239b5987-5964-42b5-b228-63765f5461df", "67d8d551-1404-432c-90fd-4fabc85efdbd"]
+PRODUCTS_CAT_EJO = ["0a4f6648-1831-44e5-902d-83b02e5be497"]
+PRODUCTS_CAT_ROLO = ["a36de552-c85f-4c59-8b36-1614462c24fd"]
+
+CHARS_CAT_SITA = ["extra_yalo_2", "extra_patzoy_2"]
+CHARS_CAT_MECH = ["extra_yalo_4", "extra_patzoy_3"]
+CHARS_CAT_KAITIA = ["extra_yalo_8", "extra_patzoy_4"]
+CHARS_CAT_TAMP = ["extra_yalo_9", "extra_patzoy_5"]
+CHARS_CAT_COLOR = ["extra_yalo_10", "extra_patzoy_6"]
+CHARS_CAT_WOOD = ["extra_yalo_11", "extra_patzoy_7"]
