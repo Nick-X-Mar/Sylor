@@ -370,7 +370,7 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
     offer_product_body = {}
     if results is not None and len(results) > 0:
         for offer_product in results:
-            last_charge_percentage = 1 + float(offer_product.get("last_charge")) if offer_product.get("last_charge") is not None else 1.00
+            last_charge_percentage = float(offer_product.get("last_charge")) if offer_product.get("last_charge") is not None else 1.00
             print(f"offer_product.get('last_charge'): {offer_product.get('last_charge')}")
             print(f"last_charge_percentage: {last_charge_percentage}")
             print(f"charge: {charge}")
@@ -378,32 +378,37 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             items = int(offer_product.get("quantity")) if offer_product.get("quantity") is not None else 1
             if offer_product.get("extra_patzoy_1_1_amount") is not None:
                 try:
-                    am = float(offer_product.get("extra_patzoy_1_1_amount"))
-                    offer_products_chars_amount += am * items
-                    grouped_chars["extra_patzoy_1_1_amount"] += am * items
+                    am = (float(offer_product.get("extra_patzoy_1_1_amount")) / last_charge_percentage) * charge * items
+                    offer_products_chars_amount += am
+                    grouped_chars["extra_patzoy_1_1_amount"] += am
                     print(f"offer_product.get('extra_patzoy_1_1_amount'): {offer_product.get('extra_patzoy_1_1_amount')}")
-                    offer_product_body["extra_patzoy_1_1_amount"] = (am / last_charge_percentage) * charge * items
+                    offer_product_body["extra_patzoy_1_1_amount"] = am
                     print(f" offer_product_body['extra_patzoy_1_1_amount']: { offer_product_body['extra_patzoy_1_1_amount']}")
+                    offer_product_body["extra_patzoy_1_1"] = offer_product.get("extra_patzoy_1_1")
                 except:
                     pass
             if offer_product.get("extra_patzoy_1_2_amount") is not None:
                 try:
-                    am = float(offer_product.get("extra_patzoy_1_2_amount"))
-                    offer_products_chars_amount += am * items
-                    grouped_chars["extra_patzoy_1_2_amount"] += am * items
-                    offer_product_body["extra_patzoy_1_2_amount"] = (am / last_charge_percentage) * charge * items
+                    am = (float(offer_product.get("extra_patzoy_1_2_amount")) / last_charge_percentage) * charge * items
+                    offer_products_chars_amount += am
+                    grouped_chars["extra_patzoy_1_2_amount"] += am
+                    offer_product_body["extra_patzoy_1_2_amount"] = am
+                    offer_product_body["extra_patzoy_1_2"] = offer_product.get("extra_patzoy_1_2")
                 except:
                     pass
             for i in range(12):  # 0 11
                 try:
-                    am = float(offer_product.get(f"extra_yalo_{i + 1}_amount"))
-                    offer_products_chars_amount += am * items
-                    grouped_chars[f"extra_yalo_{i + 1}_amount"] += am * items
-                    offer_product_body[f"extra_yalo_{i + 1}_amount"] = (am / last_charge_percentage) * charge * items
+                    am = (float(offer_product.get(f"extra_yalo_{i + 1}_amount")) / last_charge_percentage) * charge * items
+                    offer_products_chars_amount += am
+                    grouped_chars[f"extra_yalo_{i + 1}_amount"] += am
+                    offer_product_body[f"extra_yalo_{i + 1}_amount"] = am
+                    offer_product_body[f"extra_yalo_{i + 1}"] = offer_product.get(f"extra_yalo_{i + 1}")
+
                     am = float(offer_product.get(f"extra_patzoy_{i + 1}_amount"))
-                    offer_products_chars_amount += am * items
-                    grouped_chars[f"extra_patzoy_{i + 1}_amount"] += am * items
-                    offer_product_body[f"extra_patzoy_{i + 1}_amount"] = (am / last_charge_percentage) * charge * items
+                    offer_products_chars_amount += am
+                    grouped_chars[f"extra_patzoy_{i + 1}_amount"] += am
+                    offer_product_body[f"extra_patzoy_{i + 1}_amount"] = am
+                    offer_product_body[f"extra_patzoy_{i + 1}"] = offer_product.get(f"extra_patzoy_{i + 1}")
                 except:
                     pass
 
