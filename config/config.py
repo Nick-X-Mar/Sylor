@@ -33,6 +33,7 @@ PRODUCTS_CAT_PATZ = ["239b5987-5964-42b5-b228-63765f5461df", "67d8d551-1404-432c
 PRODUCTS_CAT_EJO = ["0a4f6648-1831-44e5-902d-83b02e5be497"]
 PRODUCTS_CAT_ROLO = ["a36de552-c85f-4c59-8b36-1614462c24fd"]
 
+CHARS_CAT_METAL_PARTS = ["extra_patzoy_1_1", "extra_patzoy_1_2"]
 CHARS_CAT_SITA = ["extra_yalo_2", "extra_patzoy_2"]
 CHARS_CAT_MECH = ["extra_yalo_4", "extra_patzoy_3"]
 CHARS_CAT_KAITIA = ["extra_yalo_8", "extra_patzoy_4"]

@@ -2,36 +2,32 @@
    "version":"2.0",
    "routeKey":"PUT /offer_costing/edit",
    "rawPath":"/offer_costing/edit",
-   "rawQueryString":"offer_costing_id=23cfc93f-8fcc-47fc-aaf8-52c15af6c597",
-   "cookies":[
-      "csrftoken=HB9sm21xaDWRaoWGw2SbrlyhHheEd2PSiTZOTvEhvGSh0tyqJZQjHG9bzHiAlgvp",
-      "amplitude_id_eb9e4621db21faf713ee50c637f3cf36=eyJkZXZpY2VJZCI6ImZiODI4YTNjLTI1M2ItNDJlZi1hZTE3LTk3ZmUwZGZkY2IxYVIiLCJ1c2VySWQiOm51bGwsIm9wdE91dCI6ZmFsc2UsInNlc3Npb25JZCI6MTY2NDg3NjYxNTM5NiwibGFzdEV2ZW50VGltZSI6MTY2NDg3NjYxNTM5NiwiZXZlbnRJZCI6MCwiaWRlbnRpZnlJZCI6MCwic2VxdWVuY2VOdW1iZXIiOjB9"
-   ],
+   "rawQueryString":"offer_costing_id=186a7aac-5260-4a5e-9623-34ef5646d3ed",
    "headers":{
       "accept":"*/*",
       "accept-encoding":"gzip, deflate, br",
-      "accept-language":"en,el-GR;q=0.9,el;q=0.8,en-GB;q=0.7",
-      "content-length":"524",
+      "accept-language":"en,el-GR;q=0.9,el;q=0.8",
+      "content-length":"643",
       "content-type":"application/json",
       "host":"fj612pb22d.execute-api.eu-central-1.amazonaws.com",
       "origin":"https://fj612pb22d.execute-api.eu-central-1.amazonaws.com",
-      "referer":"http://localhost:3000/offers/edit/ad2af1ec-9966-47ff-8bf6-b08250637f23/offercosting",
+      "referer":"http://localhost:3000/offers/edit/4431fda0-d281-4d54-9395-15b0b16b773f/offercosting",
       "sec-ch-ua":"\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
       "sec-ch-ua-mobile":"?0",
-      "sec-ch-ua-platform":"\"Windows\"",
+      "sec-ch-ua-platform":"\"macOS\"",
       "sec-fetch-dest":"empty",
       "sec-fetch-mode":"cors",
       "sec-fetch-site":"same-origin",
-      "user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
-      "x-amzn-trace-id":"Root=1-641dc4c7-05ea32c52fcb996b4464ab76",
-      "x-forwarded-for":"127.0.0.1, 80.107.85.62",
+      "user-agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+      "x-amzn-trace-id":"Root=1-641ea76b-42a5eb7e1ae5c7a30ce3010d",
+      "x-forwarded-for":"127.0.0.1, 94.64.77.156",
       "x-forwarded-host":"localhost:3000",
       "x-forwarded-port":"443",
       "x-forwarded-proto":"https",
-      "x_access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6Im5pa29zIiwiZXhwIjoxNjc0NzM1NjQ3fQ.3WwR9XjsgZ_eJ0NUAYAwVKj7QIM2YTfQvdyvfY0RjO8"
+      "x_access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InlhbiIsImV4cCI6MTY3OTc2OTkwM30.5Oxh1nBnA8ukJzCTB73CLkuYSeOCKw7c7WDjWy2hYUU"
    },
    "queryStringParameters":{
-      "offer_costing_id":"23cfc93f-8fcc-47fc-aaf8-52c15af6c597"
+      "offer_costing_id":"186a7aac-5260-4a5e-9623-34ef5646d3ed"
    },
    "requestContext":{
       "accountId":"911894295923",
@@ -42,15 +38,15 @@
          "method":"PUT",
          "path":"/offer_costing/edit",
          "protocol":"HTTP/1.1",
-         "sourceIp":"80.107.85.62",
-         "userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
+         "sourceIp":"94.64.77.156",
+         "userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
       },
-      "requestId":"CSuvSgR9FiAEM8w=",
+      "requestId":"CU8Y5g0jFiAEJ7g=",
       "routeKey":"PUT /offer_costing/edit",
       "stage":"$default",
-      "time":"24/Mar/2023:15:41:59 +0000",
-      "timeEpoch":1679672519923
+      "time":"25/Mar/2023:07:48:59 +0000",
+      "timeEpoch":1679730539821
    },
-   "body":"{\"offer\":\"ad2af1ec-9966-47ff-8bf6-b08250637f23\",\"people\":\"2\",\"area\":\"16\",\"trip_amount\":\"836.00\",\"trip_amount_actual\":\"0\",\"per_product_amount\":\"18.00\",\"per_product_amount_actual\":\"0\",\"transportation_out\":\"0.00\",\"transportation_out_actual\":\"0\",\"transportation_in\":\"0\",\"epimetrisi\":\"0\",\"crew_cost\":\"0\",\"extra_cost\":\"0\",\"trip_amount_list\":[\"553996cf-ec8a-43aa-840d-ebe366f964b0\"],\"per_product_amount_list\":[],\"transportation_out_list\":[],\"transportation_in_list\":[],\"epimetrisi_list\":[],\"crew_cost_list\":[],\"extra_cost_list\":[]}",
+   "body":"{\"offer\":\"4431fda0-d281-4d54-9395-15b0b16b773f\",\"people\":\"2\",\"area\":\"4\",\"trip_amount\":\"494.00\",\"trip_amount_actual\":\"0\",\"per_product_amount\":\"108.00\",\"per_product_amount_actual\":\"0\",\"transportation_out\":\"219.60\",\"transportation_out_actual\":\"400\",\"transportation_in\":\"0\",\"epimetrisi\":\"0\",\"crew_cost\":\"0\",\"extra_cost\":\"0\",\"trip_amount_list\":[\"553996cf-ec8a-43aa-840d-ebe366f964b0\"],\"per_product_amount_list\":[\"59210467-e38e-4f10-aae8-df41441c6e64\"],\"transportation_out_list\":[\"a36de552-c85f-4c59-8b36-1614462c24fd\",\"0a4f6648-1831-44e5-902d-83b02e5be497\"],\"transportation_in_list\":[],\"epimetrisi_list\":[],\"crew_cost_list\":[],\"extra_cost_list\":[]}",
    "isBase64Encoded":false
 }
