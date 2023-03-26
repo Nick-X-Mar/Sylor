@@ -404,8 +404,8 @@ def combine_grouped_chars(grouped_chars):
             else:
                 grouped_chars["cat_color"]["number_of_products"] = int(
                     grouped_chars["cat_color"]["number_of_products"]) + int(v["number_of_products"])
-                grouped_chars["cat_color"]["total_price"] = (float(grouped_chars["cat_color"].get("total_price")) if \
-                grouped_chars["cat_color"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get(
+                grouped_chars["cat_color"]["total_price"] = (float(grouped_chars["cat_color"].get("total_price")) if
+                                                             grouped_chars["cat_color"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get(
                     "total_price") is not None else 0
                 grouped_chars.pop(k)
 
@@ -416,8 +416,8 @@ def combine_grouped_chars(grouped_chars):
             else:
                 grouped_chars["cat_wood"]["number_of_products"] = int(
                     grouped_chars["cat_wood"]["number_of_products"]) + int(v["number_of_products"])
-                grouped_chars["cat_wood"]["total_price"] = (float(grouped_chars["cat_wood"].get("total_price")) if \
-                    grouped_chars["cat_wood"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get(
+                grouped_chars["cat_wood"]["total_price"] = (float(grouped_chars["cat_wood"].get("total_price")) if
+                                                            grouped_chars["cat_wood"].get("total_price") is not None else 0) + float(v["total_price"]) if v.get(
                     "total_price") is not None else 0
                 grouped_chars.pop(k)
 
@@ -564,10 +564,13 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             "total_price": "0.00"
         }
     }
-    offer_products_chars_amount = 0
-    offer_product_body = {}
+    # offer_products_chars_amount = 0
+    # offer_product_body = {}
     if results is not None and len(results) > 0:
         for offer_product in results:
+            offer_products_chars_amount = 0
+            offer_product_body = {}
+            print(offer_product)
             last_charge_percentage = float(offer_product.get("last_charge")) if offer_product.get(
                 "last_charge") is not None else 1.00
             print(f"offer_product.get('last_charge'): {offer_product.get('last_charge')}")
@@ -617,6 +620,9 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
                 except Exception as e:
                     print(e)
 
+            if offer_product.get("offer_product_key") == "f80e311c-a067-4c5c-900d-7df29001b799":
+                print("A111")
+                print(offer_product_body)
             status1, msg1, data1 = update_offer_product(headers, offer_product.get('offer_product_key'), offer_product_body)
             if status1 != 200:
                 return func_resp(msg=msg1, data=[], status=status1)
@@ -677,18 +683,30 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
                                 f"for each product + {offer_product_charges[offer_product.get('offer_product_key')]} euros")
 
                             if product.get('product_name') in grouped_products:
+                                print("stats")
+                                print(offer_product_old_unit_amount.get(offer_product.get('offer_product_key')))
+                                print(offer_product_charges[offer_product.get('offer_product_key')])
                                 total_u_amount = (float(
                                     offer_product_old_unit_amount.get(offer_product.get('offer_product_key'))) + float(
                                     offer_product_charges[offer_product.get('offer_product_key')])) * charge
                                 total_amount = str(format(float(offer_product.get('quantity')) * total_u_amount,
                                                           '.2f')) if offer_product.get('quantity') is not None else str(
                                     format(float(total_u_amount), '.2f'))
+                                extra_amount_if_exists = float(offer_product_charges[offer_product.get('offer_product_key')]) * float(offer_product.get('quantity', 1)) * charge
+                                print(f"extra_amount_if_exists: {extra_amount_if_exists}")
+                                print(total_amount)
+                                print(grouped_products[product.get('product_name')].get("total_price"))
                                 if grouped_products[product.get('product_name')].get("total_price") is None:
                                     grouped_products[product.get('product_name')]["total_price"] = total_amount
                                 else:
-                                    grouped_products[product.get('product_name')]["total_price"] = str(format(
-                                        float(grouped_products[product.get('product_name')]["total_price"]) + float(
-                                            total_amount), '.2f'))
+                                    print("mesa")
+                                    print(grouped_products[product.get('product_name')]["total_price"])
+
+                                    # grouped_products[product.get('product_name')]["total_price"] = str(format(
+                                    #     float(grouped_products[product.get('product_name')]["total_price"]) + float(
+                                    #         extra_amount_if_exists), '.2f'))
+                                    grouped_products[product.get('product_name')]["total_price"] = total_amount
+                                    print(grouped_products[product.get('product_name')]["total_price"])
                 # print(f"offer_product: {offer_product}")
                 print(f"producta: {product}")
                 print(grouped_products[product.get('product_name')])
@@ -816,7 +834,7 @@ def update_offer_costing_id(headers, offer_costing_id, body):
         last = True
     grouped_products = get_days_costing_for_offerproducts(headers, client, str(body.get('offer')))
 
-    print(grouped_products)
+    print(f"1. GP : {grouped_products}")
     if isinstance(grouped_products, str):
         return func_resp(msg=grouped_products, data=[], status=400)
 
@@ -824,9 +842,9 @@ def update_offer_costing_id(headers, offer_costing_id, body):
                                                                                grouped_products, body)
     if status != 200:
         return func_resp(msg=msg, data=[], status=400)
-
+    print(f"2. GP : {grouped_products}")
     combine_grouped_products(grouped_products)
-
+    print(f"3. GP : {grouped_products}")
     if last is True:
         upEx += ","
     upEx += " grouped_products = :grouped_products"

@@ -199,7 +199,7 @@ def update_offer_product(headers, offer_product_key, body):
     status, msg, data = get_offer_by_id(headers=headers, offer_product_key=offer_product_key)
     if status == 200:
         quantity = data.get('quantity')
-        last_charge = float(data.get('last_charge'))
+        last_charge = float(data.get('last_charge', 1))
 
     total_char_amount = float(0)
     chars_affected = False
