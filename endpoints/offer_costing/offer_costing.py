@@ -447,8 +447,7 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             i = 0
         total_charge_cost_amount = total_charge_cost_amount + i
 
-    charge = 1 + float(offer_data.get("charge")) / 100 if offer_data.get("charge") is not None and offer_data.get(
-        "charge") != "None" else 1.00
+    charge = 1 + float(offer_data.get("charge")) / 100 if offer_data.get("charge") is not None and offer_data.get("charge") != "None" else 1.00
 
     charges_lists = [
         "crew_cost_list",
@@ -474,8 +473,7 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             for product_name in body.get(cl):
                 if grouped_products.get(product_name) is not None:
                     total_prods += int(
-                        grouped_products.get(product_name).get('number_of_products')) if grouped_products.get(
-                        product_name).get('number_of_products') is not None else 0
+                        grouped_products.get(product_name).get('number_of_products')) if grouped_products.get(product_name).get('number_of_products') is not None else 0
             lists[cl] = total_prods
     print("Lists")
     print(lists)
@@ -564,15 +562,14 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             "total_price": "0.00"
         }
     }
-    # offer_products_chars_amount = 0
+    offer_products_chars_amount = 0
     # offer_product_body = {}
     if results is not None and len(results) > 0:
         for offer_product in results:
-            offer_products_chars_amount = 0
+
             offer_product_body = {}
             print(offer_product)
-            last_charge_percentage = float(offer_product.get("last_charge")) if offer_product.get(
-                "last_charge") is not None else 1.00
+            last_charge_percentage = float(offer_product.get("last_charge")) if offer_product.get("last_charge") is not None else 1.00
             print(f"offer_product.get('last_charge'): {offer_product.get('last_charge')}")
             print(f"last_charge_percentage: {last_charge_percentage}")
             print(f"charge: {charge}")
@@ -580,49 +577,53 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             items = int(offer_product.get("quantity")) if offer_product.get("quantity") is not None else 1
             if offer_product.get("extra_patzoy_1_1_amount") is not None and offer_product.get("extra_patzoy_1_1") is not None and offer_product.get(f"extra_patzoy_1_1") != "":
                 try:
-                    am = (float(offer_product.get("extra_patzoy_1_1_amount")) / last_charge_percentage) * charge
+                    am = float(format(float(offer_product.get("extra_patzoy_1_1_amount")) * charge, '.2f'))
                     offer_products_chars_amount += am * items
                     grouped_chars["extra_patzoy_1_1"]["total_price"] = str(float(grouped_chars["extra_patzoy_1_1"]["total_price"] if grouped_chars["extra_patzoy_1_1"]["total_price"] is not None else 0) + am * items)
                     grouped_chars["extra_patzoy_1_1"]["number_of_products"] = int(grouped_chars["extra_patzoy_1_1"]["number_of_products"]) + items
-                    offer_product_body["extra_patzoy_1_1_amount"] = am
+                    offer_product_body["extra_patzoy_1_1_amount_with_charge"] = am
+                    offer_product_body["extra_patzoy_1_1_amount"] = offer_product.get("extra_patzoy_1_1_amount")
                     offer_product_body["extra_patzoy_1_1"] = offer_product.get("extra_patzoy_1_1")
                 except Exception as e:
                     print(e)
 
             if offer_product.get("extra_patzoy_1_2_amount") is not None and offer_product.get("extra_patzoy_1_2") is not None and offer_product.get(f"extra_patzoy_1_2") != "":
                 try:
-                    am = (float(offer_product.get("extra_patzoy_1_2_amount")) / last_charge_percentage) * charge
+                    am = float(format(float(offer_product.get("extra_patzoy_1_2_amount")) * charge, '.2f'))
                     offer_products_chars_amount += am * items
                     grouped_chars["extra_patzoy_1_2"]["total_price"] = str(float(grouped_chars["extra_patzoy_1_2"]["total_price"] if grouped_chars["extra_patzoy_1_2"]["total_price"] is not None else 0) + am * items)
                     grouped_chars["extra_patzoy_1_2"]["number_of_products"] = int(grouped_chars["extra_patzoy_1_2"]["number_of_products"]) + items
-                    offer_product_body["extra_patzoy_1_2_amount"] = am
+                    offer_product_body["extra_patzoy_1_2_amount_with_charge"] = am
+                    offer_product_body["extra_patzoy_1_2_amount"] = offer_product.get("extra_patzoy_1_2_amount")
                     offer_product_body["extra_patzoy_1_2"] = offer_product.get("extra_patzoy_1_2")
                 except Exception as e:
                     print(e)
 
             for i in range(12):  # 0 11
                 try:
-                    am = float((float(offer_product.get(f"extra_yalo_{i + 1}_amount")) / last_charge_percentage) * charge)
+                    am = float(format(float(offer_product.get(f"extra_yalo_{i + 1}_amount")) * charge, '.2f'))
                     offer_products_chars_amount += am * items
                     if grouped_chars.get(f"extra_yalo_{i + 1}") is not None and (offer_product.get(f"extra_yalo_{i + 1}") is not None and offer_product.get(f"extra_yalo_{i + 1}") != ""):
                         grouped_chars[f"extra_yalo_{i + 1}"]["total_price"] = str(float(grouped_chars[f"extra_yalo_{i + 1}"]["total_price"] if grouped_chars[f"extra_yalo_{i + 1}"]["total_price"] is not None else 0) + am * items)
                         grouped_chars[f"extra_yalo_{i + 1}"]["number_of_products"] = int(grouped_chars[f"extra_yalo_{i + 1}"]["number_of_products"]) + items
-                        offer_product_body[f"extra_yalo_{i + 1}_amount"] = am
+                        offer_product_body[f"extra_yalo_{i + 1}_amount_with_charge"] = am
+                        offer_product_body[f"extra_yalo_{i + 1}_amount"] = offer_product.get(f"extra_yalo_{i + 1}_amount")
                         offer_product_body[f"extra_yalo_{i + 1}"] = offer_product.get(f"extra_yalo_{i + 1}")
 
                     if grouped_chars.get(f"extra_patzoy_{i + 1}") is not None and offer_product.get(f"extra_patzoy_{i + 1}") is not None and offer_product.get(f"extra_patzoy_{i + 1}") != "":
-                        am = float((float(offer_product.get(f"extra_patzoy_{i + 1}_amount")) / last_charge_percentage) * charge)
+                        am = float(format(float(offer_product.get(f"extra_patzoy_{i + 1}_amount")) * charge, '.2f'))
                         offer_products_chars_amount += am * items
                         grouped_chars[f"extra_patzoy_{i + 1}"]["total_price"] = str(float(grouped_chars[f"extra_patzoy_{i + 1}"]["total_price"] if grouped_chars[f"extra_patzoy_{i + 1}"]["total_price"] is not None else 0) + am * items)
                         grouped_chars[f"extra_patzoy_{i + 1}"]["number_of_products"] = int(grouped_chars[f"extra_patzoy_{i + 1}"]["number_of_products"]) + items
-                        offer_product_body[f"extra_patzoy_{i + 1}_amount"] = am
+                        offer_product_body[f"extra_patzoy_{i + 1}_amount_with_charge"] = am
+                        offer_product_body[f"extra_patzoy_{i + 1}_amount"] = offer_product.get(f"extra_patzoy_{i + 1}_amount")
                         offer_product_body[f"extra_patzoy_{i + 1}"] = offer_product.get(f"extra_patzoy_{i + 1}")
                 except Exception as e:
                     print(e)
 
-            if offer_product.get("offer_product_key") == "f80e311c-a067-4c5c-900d-7df29001b799":
-                print("A111")
-                print(offer_product_body)
+            # if offer_product.get("offer_product_key") == "f80e311c-a067-4c5c-900d-7df29001b799":
+            # print("A111")
+            # print(offer_product_body)
             status1, msg1, data1 = update_offer_product(headers, offer_product.get('offer_product_key'), offer_product_body)
             if status1 != 200:
                 return func_resp(msg=msg1, data=[], status=status1)
