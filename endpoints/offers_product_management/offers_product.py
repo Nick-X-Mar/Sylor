@@ -207,6 +207,13 @@ def update_offer_product(headers, offer_product_key, body):
     upEx = "set "
     last = False
     attValues = {}
+
+    if body.get('total_char_amount') is not None and body.get('total_char_amount') != "":
+        if last is True:
+            upEx += ","
+        upEx += " total_char_amount = :total_char_amount"
+        attValues[":total_char_amount"] = str(body.get('total_char_amount'))
+        last = True
     if body.get('extra_patzoy_1_1_amount_with_charge') is not None and body.get('extra_patzoy_1_1_amount_with_charge') != "":
         if last is True:
             upEx += ","
@@ -304,7 +311,11 @@ def update_offer_product(headers, offer_product_key, body):
             upEx += ","
         upEx += " unit_amount = :unit_amount"
         attValues[":unit_amount"] = str(body.get('unit_amount'))
+        upEx += ","
+        upEx += " total_unit_amount = :total_unit_amount"
+        attValues[":total_unit_amount"] = str(0)
         last = True
+
     if body.get('set_time') is not None:
         if last is True:
             upEx += ","
@@ -332,7 +343,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_1') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_1_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_1_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_1_amount"] = str(0)
@@ -350,7 +361,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_2') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_2_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_2_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_2_amount"] = str(0)
@@ -368,7 +379,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_3') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_3_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_3_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_3_amount"] = str(0)
@@ -386,7 +397,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_4') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_4_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_4_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_4_amount"] = str(0)
@@ -404,7 +415,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_5') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_5_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_5_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_5_amount"] = str(0)
@@ -422,7 +433,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_6') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_6_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_6_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_6_amount"] = str(0)
@@ -440,7 +451,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_7') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_7_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_7_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_7_amount"] = str(0)
@@ -458,7 +469,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_8') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_8_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_8_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_8_amount"] = str(0)
@@ -476,7 +487,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_9') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_9_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_9_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_9_amount"] = str(0)
@@ -494,7 +505,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_10') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_10_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_10_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_10_amount"] = str(0)
@@ -512,7 +523,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_11') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_11_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_11_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_11_amount"] = str(0)
@@ -530,7 +541,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_yalo_12') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_yalo_12_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_yalo_12_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_yalo_12_amount"] = str(0)
@@ -548,7 +559,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_1_1') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_1_1_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_1_1_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_1_1_amount"] = str(0)
@@ -566,7 +577,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_1_2') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_1_2_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_1_2_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_1_2_amount"] = str(0)
@@ -584,7 +595,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_2') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_2_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_2_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_2_amount"] = str(0)
@@ -602,7 +613,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_3') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_3_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_3_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_3_amount"] = str(0)
@@ -620,7 +631,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_4') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_4_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_4_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_4_amount"] = str(0)
@@ -638,7 +649,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_5') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_5_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_5_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_5_amount"] = str(0)
@@ -656,7 +667,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_6') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_6_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_6_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_6_amount"] = str(0)
@@ -674,7 +685,7 @@ def update_offer_product(headers, offer_product_key, body):
             if body.get('extra_patzoy_7') != "":
                 chars_affected = True
                 char_single_amount = float(float(body.get('extra_patzoy_7_amount')))
-                total_char_amount += (char_single_amount * last_charge)
+                total_char_amount += char_single_amount
                 attValues[":extra_patzoy_7_amount"] = str(format(char_single_amount, '.2f'))
             else:
                 attValues[":extra_patzoy_7_amount"] = str(0)
@@ -684,10 +695,11 @@ def update_offer_product(headers, offer_product_key, body):
         if last is True:
             upEx += ","
         upEx += " total_char_amount = :total_char_amount"
-        if quantity is not None:
-            attValues[":total_char_amount"] = str(format(float(total_char_amount) * int(quantity), '.2f'))
-        else:
-            attValues[":total_char_amount"] = str(total_char_amount)
+        attValues[":total_char_amount"] = str(0)
+        # if quantity is not None:
+        #     attValues[":total_char_amount"] = str(format(float(total_char_amount) * int(quantity), '.2f'))
+        # else:
+        #     attValues[":total_char_amount"] = str(total_char_amount)
         last = True
 
     client, status = connect_to_dynamodb_resource()
