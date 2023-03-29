@@ -460,6 +460,7 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
     ]
     lists = {}
     offer_product_charges = {}
+    offer_product_name = {}
     offer_product_old_charges = {}
     offer_product_old_total_amount = {}
     offer_product_old_unit_amount = {}
@@ -475,8 +476,8 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
                     total_prods += int(
                         grouped_products.get(product_name).get('number_of_products')) if grouped_products.get(product_name).get('number_of_products') is not None else 0
             lists[cl] = total_prods
-    print("Lists")
-    print(lists)
+    # print("Lists")
+    # print(lists)
     offer_product_table = dynamodb.Table(DYNAMODB_OFFERS_PRODUCT_TABLE)
     results = offer_product_table.scan(FilterExpression=Attr('offer').eq(offer)).get('Items')
     # print(f"Len products {len(results)}")
@@ -568,11 +569,11 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
         for offer_product in results:
 
             offer_product_body = {}
-            print(offer_product)
+            # print(offer_product)
             last_charge_percentage = float(offer_product.get("last_charge")) if offer_product.get("last_charge") is not None else 1.00
-            print(f"offer_product.get('last_charge'): {offer_product.get('last_charge')}")
-            print(f"last_charge_percentage: {last_charge_percentage}")
-            print(f"charge: {charge}")
+            # print(f"offer_product.get('last_charge'): {offer_product.get('last_charge')}")
+            # print(f"last_charge_percentage: {last_charge_percentage}")
+            # print(f"charge: {charge}")
             offer_product_body["last_charge"] = charge
             offer_product_body["total_char_amount"] = 0
             items = int(offer_product.get("quantity")) if offer_product.get("quantity") is not None else 1
@@ -636,9 +637,10 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
 
             status, msg, product = get_product_by_id(headers=headers, product_key=offer_product.get('product'),
                                                      translation=False, lang='el')
-            print(product.get('product_name'))
-            print(status)
-            print(msg)
+            # print(f"New round for product : {product.get('product_name')}")
+            # print(status)
+            # print(msg)
+            offer_product_name[offer_product.get('offer_product_key')] = product.get('product_name')
             if status == 200:
                 extra_charged_product_found = False
                 for cl in charges_lists:
@@ -652,86 +654,69 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
                         #     print(product.get('product_name') in body.get(cl))
                         if product.get('product_name') in body.get(cl):
                             extra_charged_product_found = True
-                            print(
-                                f"Product {product.get('product_name')} in {cl} is {product.get('product_name') in body.get(cl)}")
-                            print(f"{cl} cost is : {body.get(cl[:-5])}")
-                            print(f"Splitting among {lists[cl]} products")
-                            print(
-                                f"check if value exists {offer_product_charges.get(offer_product.get('offer_product_key'))}")
+                            # print(f"Product {product.get('product_name')} in {cl} is {product.get('product_name') in body.get(cl)}")
+                            # print(f"{cl} cost is : {body.get(cl[:-5])}")
+                            # print(f"Splitting among {lists[cl]} products")
+                            # print(f"check if value exists {offer_product_charges.get(offer_product.get('offer_product_key'))}")
                             if offer_product_charges.get(offer_product.get('offer_product_key')) is None:
                                 val = 0
                             else:
                                 val = float(offer_product_charges.get(offer_product.get('offer_product_key')))
-                            print(f"body.get(cl[:-5]): {body.get(cl[:-5])}")
-                            print(f":lists.get(cl) {lists.get(cl)}")
-                            print(f"body.get(cl[:-5] + '_actual': {body.get(cl[:-5] + '_actual')}")
-                            offer_product_charges[offer_product.get('offer_product_key')] = str(
-                                val + float(body.get(cl[:-5])) / lists.get(cl)) if body.get(
-                                cl[:-5]) is not None and lists.get(cl) is not None else 0
-                            if body.get(cl[:-5] + "_actual") is not None and body.get(
-                                    cl[:-5] + "_actual") != 0 and body.get(cl[:-5] + "_actual") != "0":
-                                offer_product_charges[offer_product.get('offer_product_key')] = str(
-                                    val + float(body.get(cl[:-5] + "_actual")) / lists.get(cl)) if body.get(
-                                    cl[:-5] + "_actual") is not None and lists.get(cl) is not None else 0
-                            offer_product_old_charges[offer_product.get('offer_product_key')] = offer_product.get(
-                                'extra_splitted_cost') if offer_product.get(
-                                'extra_splitted_cost') is not None and offer_product.get(
-                                'extra_splitted_cost') != "None" else 0
-                            offer_product_old_total_amount[offer_product.get('offer_product_key')] = offer_product.get(
-                                'total_amount') if offer_product.get('total_amount') is not None and offer_product.get(
-                                'total_amount') != "None" else 0
-                            offer_product_old_unit_amount[offer_product.get('offer_product_key')] = offer_product.get(
-                                'unit_amount') if offer_product.get('unit_amount') is not None and offer_product.get(
-                                'unit_amount') != "None" else 0
-                            offer_product_quantity[offer_product.get('offer_product_key')] = offer_product.get(
-                                'quantity') if offer_product.get('quantity') is not None and offer_product.get(
-                                'quantity') != "None" else 0
-                            print(
-                                f"for each product + {offer_product_charges[offer_product.get('offer_product_key')]} euros")
+                            # print(f"body.get(cl[:-5]): {body.get(cl[:-5])}")
+                            # print(f":lists.get(cl) {lists.get(cl)}")
+                            # print(f"body.get(cl[:-5] + '_actual': {body.get(cl[:-5] + '_actual')}")
+                            offer_product_charges[offer_product.get('offer_product_key')] = str(val + float(body.get(cl[:-5])) / lists.get(cl)) if body.get(cl[:-5]) is not None and lists.get(cl) is not None else 0
+                            if body.get(cl[:-5] + "_actual") is not None and body.get(cl[:-5] + "_actual") != 0 and body.get(cl[:-5] + "_actual") != "0":
+                                offer_product_charges[offer_product.get('offer_product_key')] = str(val + float(body.get(cl[:-5] + "_actual")) / lists.get(cl)) if body.get(cl[:-5] + "_actual") is not None and lists.get(cl) is not None else 0
+                            offer_product_old_charges[offer_product.get('offer_product_key')] = offer_product.get('extra_splitted_cost') if offer_product.get('extra_splitted_cost') is not None and offer_product.\
+                                get('extra_splitted_cost') != "None" else 0
+                            offer_product_old_total_amount[offer_product.get('offer_product_key')] = offer_product.get('total_amount') if offer_product.get('total_amount') is not None and offer_product.\
+                                get('total_amount') != "None" else 0
+                            offer_product_old_unit_amount[offer_product.get('offer_product_key')] = offer_product.get('unit_amount') if offer_product.get('unit_amount') is not None and offer_product.\
+                                get('unit_amount') != "None" else 0
+                            offer_product_quantity[offer_product.get('offer_product_key')] = offer_product.get('quantity') if offer_product.get('quantity') is not None and offer_product.\
+                                get('quantity') != "None" else 0
+                            # print(f"for each product + {offer_product_charges[offer_product.get('offer_product_key')]} euros")
 
-                            if product.get('product_name') in grouped_products:
-                                print("stats")
-                                print(offer_product_old_unit_amount.get(offer_product.get('offer_product_key')))
-                                print(offer_product_charges[offer_product.get('offer_product_key')])
-                                total_u_amount = (float(
-                                    offer_product_old_unit_amount.get(offer_product.get('offer_product_key'))) + float(
-                                    offer_product_charges[offer_product.get('offer_product_key')])) * charge
-                                total_amount = str(format(float(offer_product.get('quantity')) * total_u_amount,
-                                                          '.2f')) if offer_product.get('quantity') is not None else str(
-                                    format(float(total_u_amount), '.2f'))
-                                extra_amount_if_exists = float(offer_product_charges[offer_product.get('offer_product_key')]) * float(offer_product.get('quantity', 1)) * charge
-                                print(f"extra_amount_if_exists: {extra_amount_if_exists}")
-                                print(total_amount)
-                                print(grouped_products[product.get('product_name')].get("total_price"))
-                                if grouped_products[product.get('product_name')].get("total_price") is None:
-                                    grouped_products[product.get('product_name')]["total_price"] = total_amount
-                                else:
-                                    print("mesa")
-                                    print(grouped_products[product.get('product_name')]["total_price"])
+        # print(offer_product_charges)
+            # if product.get('product_name') in grouped_products:
+            #     # print("stats")
+            #     # print(offer_product_old_unit_amount.get(offer_product.get('offer_product_key')))
+            #     # print(offer_product_charges[offer_product.get('offer_product_key')])
+            #     total_u_amount = (float(offer_product_old_unit_amount.get(offer_product.get('offer_product_key'))) + float(offer_product_charges[offer_product.get('offer_product_key')])) * charge
+            #     total_amount = str(format(float(offer_product.get('quantity')) * total_u_amount, '.2f')) if offer_product.get('quantity') is not None else str(format(float(total_u_amount), '.2f'))
+            #     extra_amount_if_exists = float(offer_product_charges[offer_product.get('offer_product_key')]) * float(offer_product.get('quantity', 1)) * charge
+            #     # print(f"extra_amount_if_exists: {extra_amount_if_exists}")
+            #     # print(total_amount)
+            #     # print(grouped_products[product.get('product_name')].get("total_price"))
+            #     existing_product_price = grouped_products[product.get('product_name')].get("total_price")
+            #     if existing_product_price is None:
+            #         # print("in1")
+            #         grouped_products[product.get('product_name')]["total_price"] = total_amount
+            #         # print(f"{product.get('product_name')} initial: {grouped_products[product.get('product_name')]['total_price']}")
+            #     else:
+            #         # print("in2")
+            #         # print(grouped_products[product.get('product_name')]["total_price"])
+            #
+            #         # grouped_products[product.get('product_name')]["total_price"] = str(format(
+            #         #     float(grouped_products[product.get('product_name')]["total_price"]) + float(
+            #         #         extra_amount_if_exists), '.2f'))
+            #         grouped_products[product.get('product_name')]["total_price"] = format(float(extra_amount_if_exists) + float(existing_product_price), '.2f')
+            #         print(f"New grouped price for {product.get('product_name')} is : {grouped_products[product.get('product_name')]['total_price']}")
 
-                                    # grouped_products[product.get('product_name')]["total_price"] = str(format(
-                                    #     float(grouped_products[product.get('product_name')]["total_price"]) + float(
-                                    #         extra_amount_if_exists), '.2f'))
-                                    grouped_products[product.get('product_name')]["total_price"] = total_amount
-                                    print(grouped_products[product.get('product_name')]["total_price"])
-                # print(f"offer_product: {offer_product}")
-                print(f"producta: {product}")
-                print(grouped_products[product.get('product_name')])
+            # print(f"offer_product: {offer_product}")
+            # print(f"producta: {product}")
+            # print(grouped_products[product.get('product_name')])
                 if extra_charged_product_found is False:
-                    unit_am = offer_product.get('unit_amount') if offer_product.get(
-                        'unit_amount') is not None and offer_product.get('unit_amount') != "None" else 0
-                    total_u_amount = int(unit_am) * charge
-                    total_amount = str(
-                        format(float(offer_product.get('quantity')) * total_u_amount, '.2f')) if offer_product.get(
-                        'quantity') is not None else str(format(float(total_u_amount), '.2f'))
+                    unit_am = offer_product.get('unit_amount') if offer_product.get('unit_amount') is not None and offer_product.get('unit_amount') != "None" else 0
+                    total_u_amount = float(unit_am) * charge
+                    total_amount = str(format(float(offer_product.get('quantity')) * total_u_amount, '.2f')) if offer_product.get('quantity') is not None else str(format(float(total_u_amount), '.2f'))
                     if grouped_products[product.get('product_name')].get("total_price") is None:
                         grouped_products[product.get('product_name')]["total_price"] = total_amount
                         grouped_products[product.get('product_name')]["extra_charged"] = False
                     else:
                         grouped_products[product.get('product_name')]["extra_charged"] = False
-                        grouped_products[product.get('product_name')]["total_price"] = str(format(
-                            float(grouped_products[product.get('product_name')]["total_price"]) + float(total_amount),
-                            '.2f'))
+                        grouped_products[product.get('product_name')]["total_price"] = str(format(float(grouped_products[product.get('product_name')]["total_price"]) + float(total_amount), '.2f'))
 
                     body1 = {
                         "total_unit_amount": str(format(total_u_amount, '.2f')),
@@ -739,33 +724,35 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
                         "total_amount": str(total_amount)
                     }
                     offer_amount += float(total_amount)
-                    print(f"Sending body with no charging {body1}")
+                    print(f"Offer product: {offer_product.get('offer_product_key')} has no additional costing charges. It is now updated with: {body1}")
                     status1, msg1, data1 = update_offer_product(headers, offer_product.get('offer_product_key'), body1)
                     if status1 != 200:
                         return func_resp(msg=msg1, data=[], status=status1)
-    #
-    # print(offer_product_charges)
-    # print("grouped_products...")
-    # print(grouped_products)
-    #
-    # print("grouped_chars aaaaaaa")
+    # #
+    # # print(offer_product_charges)
+    # # print("grouped_products...")
+    # # print(grouped_products)
+    # #
+    # # print("grouped_chars aaaaaaa")
     grouped_chars = combine_grouped_chars(grouped_chars)
-    print(grouped_chars)
-
-    # Save sto offer product new field extra_splitted_cost   += total_amount
-
-    # Get offer charge
-
+    # print(grouped_chars)
+    #
+    # # Save sto offer product new field extra_splitted_cost   += total_amount
+    #
+    # # Get offer charge
+    #
     # grouped_product_amount = {}
     # translation: {}
+    # print(offer_product_name)
     for offer_p, v in offer_product_charges.items():
-        # upEx = "set "
-        # last = False
-        # attValues = {}
-        print(
-            f"old total amount for product: {offer_p} was {offer_product_old_total_amount.get(offer_p)} and the extra was {offer_product_old_charges.get(offer_p)} now we add {v}")
+        # print(f"old total amount for product: {offer_p} was {offer_product_old_total_amount.get(offer_p)} and the extra was {offer_product_old_charges.get(offer_p)} now we add {v}")
         total_u_amount = (float(offer_product_old_unit_amount.get(offer_p)) + float(v)) * charge
         total_amount = format(float(offer_product_quantity.get(offer_p)) * total_u_amount, '.2f')
+        if grouped_products.get(offer_product_name.get(offer_p)) is not None:
+            if grouped_products.get(offer_product_name.get(offer_p)).get("total_price") is None:
+                grouped_products.get(offer_product_name.get(offer_p))["total_price"] = total_amount
+            else:
+                grouped_products.get(offer_product_name.get(offer_p))["total_price"] = str(format(float(grouped_products.get(offer_product_name.get(offer_p))["total_price"]) + float(total_amount), '.2f'))
         offer_amount += float(total_amount)
         # if offer_product_old_charges.get(offer_p) != v:
         # print("in")
@@ -775,17 +762,15 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             "total_amount": str(total_amount)
         }
         print(f"Sending body {body}")
+
         status, msg, data = update_offer_product(headers, offer_p, body)
         if status != 200:
             return func_resp(msg=msg, data=[], status=status)
 
-    print(
-        f"offer_amount: {offer_amount} + total_charge_cost_amount: {total_charge_cost_amount} + offer_products_chars_amount: {offer_products_chars_amount} = {offer_amount + total_charge_cost_amount + offer_products_chars_amount}")
+    print(f"offer_amount: {offer_amount} + total_charge_cost_amount: {total_charge_cost_amount} + offer_products_chars_amount: {offer_products_chars_amount} = {offer_amount + total_charge_cost_amount + offer_products_chars_amount}")
     offer_amount += total_charge_cost_amount + offer_products_chars_amount
-    offer_fpa_percentage = 1 + float(offer_data.get("fpa")) / 100 if offer_data.get(
-        "fpa") is not None and offer_data.get("fpa") != "None" else 1.00
-    offer_discount_percentage = 1 - float(offer_data.get("discount")) / 100 if offer_data.get(
-        "discount") is not None and offer_data.get("discount") != "None" else 1.00
+    offer_fpa_percentage = 1 + float(offer_data.get("fpa")) / 100 if offer_data.get("fpa") is not None and offer_data.get("fpa") != "None" else 1.00
+    offer_discount_percentage = 1 - float(offer_data.get("discount")) / 100 if offer_data.get("discount") is not None and offer_data.get("discount") != "None" else 1.00
     offer_discount_amount = offer_amount * offer_discount_percentage
     body = {
         "offer_amount": str(format(offer_amount, '.2f')),
@@ -793,14 +778,44 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
         "offer_fpa_amount": str(format(offer_discount_amount * offer_fpa_percentage, '.2f')),
         "offer_products_chars_amount": str(format(float(offer_products_chars_amount), '.2f'))
     }
-    print(body)
+    print(f"Updating offer: {offer} with body : {body}")
     status, msg, data = update_offer(offer, body)
     if status != 200:
         return func_resp(msg=msg, data=[], status=status)
 
     grouped_products.update(grouped_chars)
-    # grouped_products["chars"] = grouped_chars
+    print(f"Final grouped_products: {grouped_products}")
     return func_resp(msg="", data=grouped_products, status=200)
+
+
+# if __name__ == "__main__":
+#     client, status = connect_to_dynamodb_resource()
+#     grouped_products = {
+#        "553996cf-ec8a-43aa-840d-ebe366f964b0":{
+#           "number_of_products":"1",
+#           "units_placement":"3.2",
+#           "extra_time_needed":"0.0",
+#           "total_time":"3.2"
+#        },
+#        "total_days_needed":14.100000000000001,
+#        "59210467-e38e-4f10-aae8-df41441c6e64":{
+#           "number_of_products":"2",
+#           "units_placement":"6.4",
+#           "extra_time_needed":"0.0",
+#           "total_time":"6.4"
+#        },
+#        "239b5987-5964-42b5-b228-63765f5461df":{
+#           "number_of_products":"3",
+#           "units_placement":"4.5",
+#           "extra_time_needed":"0.0",
+#           "total_time":"4.5"
+#        },
+#        "transportation_out":"334.8",
+#        "total_products":"6"
+#     }
+#     body = {"offer":"bacf8ef6-8bdd-4012-972b-2d2961ce3143","people":"2","area":"4","trip_amount":"524.88","trip_amount_actual":"0","per_product_amount":"108.00","per_product_amount_actual":"0","transportation_out":"334.80","transportation_out_actual":"0","transportation_in":"0","epimetrisi":"0","crew_cost":"0","extra_cost":"0","trip_amount_list":["59210467-e38e-4f10-aae8-df41441c6e64","239b5987-5964-42b5-b228-63765f5461df","553996cf-ec8a-43aa-840d-ebe366f964b0"],"per_product_amount_list":["59210467-e38e-4f10-aae8-df41441c6e64"],"transportation_out_list":["239b5987-5964-42b5-b228-63765f5461df"],"transportation_in_list":[],"epimetrisi_list":[],"crew_cost_list":[],"extra_cost_list":[]}
+#     affect_products_with_offer_costing_charges("headers", client, str("bacf8ef6-8bdd-4012-972b-2d2961ce3143"),
+#                                                grouped_products, body)
 
 
 def update_offer_costing_id(headers, offer_costing_id, body):
@@ -845,21 +860,7 @@ def update_offer_costing_id(headers, offer_costing_id, body):
     if isinstance(grouped_products, str):
         return func_resp(msg=grouped_products, data=[], status=400)
 
-    status, msg, grouped_products = affect_products_with_offer_costing_charges(headers, client, str(body.get('offer')),
-                                                                               grouped_products, body)
-    if status != 200:
-        return func_resp(msg=msg, data=[], status=400)
-    print(f"2. GP : {grouped_products}")
-    combine_grouped_products(grouped_products)
-    print(f"3. GP : {grouped_products}")
-    if last is True:
-        upEx += ","
-    upEx += " grouped_products = :grouped_products"
-    attValues[":grouped_products"] = json.dumps(grouped_products)
-    last = True
-    # return ""
-    if body.get('people') is not None and body.get('people') != "" and body.get('area') is not None and body.get(
-            'area') != "":
+    if body.get('people') is not None and body.get('people') != "" and body.get('area') is not None and body.get('area') != "":
         if last is True:
             upEx += ","
         upEx += " people = :people"
@@ -872,9 +873,10 @@ def update_offer_costing_id(headers, offer_costing_id, body):
 
         upEx += ","
         upEx += " trip_amount = :trip_amount"
-        attValues[":trip_amount"] = str(format(float(
-            float(body.get("area")) * int(body.get("people")) * float(config.WORK_HOUR_COST) + float(
-                grouped_products.get('total_days_needed')) * float(config.WORK_HOUR_COST)), '.2f'))
+        tp_am = str(format(float(float(body.get("area")) * int(body.get("people")) * float(config.WORK_HOUR_COST) +
+                                 float(grouped_products.get('total_days_needed')) * float(config.WORK_HOUR_COST)), '.2f'))
+        attValues[":trip_amount"] = tp_am
+        body["transportation_out"] = tp_am
 
         # 'per_product_amount': str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
 
@@ -896,8 +898,8 @@ def update_offer_costing_id(headers, offer_costing_id, body):
     if last is True:
         upEx += ","
     upEx += " per_product_amount = :per_product_amount"
-    attValues[":per_product_amount"] = str(
-        format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
+    attValues[":per_product_amount"] = str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
+    body["per_product_amount"] = str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
     # last = True
     # # if body.get('transportation_out') is not None and body.get('transportation_out') != "":
     # if last is True:
@@ -905,6 +907,24 @@ def update_offer_costing_id(headers, offer_costing_id, body):
     upEx += " transportation_out = :transportation_out"
     attValues[":transportation_out"] = str(format(float(grouped_products['transportation_out']), '.2f'))
     last = True
+
+    body["transportation_out"] = str(format(float(grouped_products['transportation_out']), '.2f'))
+    status, msg, grouped_products = affect_products_with_offer_costing_charges(headers, client, str(body.get('offer')),
+                                                                               grouped_products, body)
+    if status != 200:
+        return func_resp(msg=msg, data=[], status=400)
+
+    print(f"2. GP : {grouped_products}")
+    combine_grouped_products(grouped_products)
+    print(f"3. GP : {grouped_products}")
+    if last is True:
+        upEx += ","
+    upEx += " grouped_products = :grouped_products"
+    attValues[":grouped_products"] = json.dumps(grouped_products)
+    last = True
+
+
+
     if body.get('transportation_in') is not None and body.get('transportation_in') != "":
         if last is True:
             upEx += ","

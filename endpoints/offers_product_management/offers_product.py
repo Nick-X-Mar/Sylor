@@ -83,6 +83,7 @@ def get_offer_by_id(headers, offer_product_key):
 
 
 def get_extra_costings(headers, dynamodb, p_id, m2):
+    m2 = m2 / 1000000
     # table = dynamodb.Table(DYNAMODB_PRODUCTS_TABLE)
     # print(f"product_id: {p_id}")
     status, msg, data = get_product_by_id(headers=headers, product_key=p_id, translation=False, lang='el')
@@ -92,7 +93,9 @@ def get_extra_costings(headers, dynamodb, p_id, m2):
         # print(f"data.get('product_name'): {data.get('product_name')}")
         # print(f"data.get('typology'): {data.get('typology')}")
         table = dynamodb.Table(DYNAMODB_EXTRA_COSTINGS_TABLE)
-        results = table.scan(FilterExpression=(Attr('productId').eq(data.get('product_name')) and Attr('typologyId').eq(data.get('typology')) and Attr('typology_1').eq(data.get('typology_1'))))
+        results = table.scan(FilterExpression=(Attr('productId').eq(data.get('product_name')) and
+                                               Attr('typologyId').eq(data.get('typology')) and
+                                               Attr('typology_1').eq(data.get('typology_1'))))
         # print(results)
         results = results.get('Items')
         charge = 0
@@ -708,7 +711,7 @@ def update_offer_product(headers, offer_product_key, body):
 
     if body.get('x') is not None and body.get('x') != "None" and body.get('y') is not None and body.get('y') != "None":
         extra_cost = get_extra_costings(headers, client, body.get('product'), (float(body.get('x')) * float(body.get('y'))))
-        # print(f"extra_cost: {extra_cost}")
+        print(f"extra_cost: {extra_cost}")
         if extra_cost is False:
             return func_resp(msg="Error during fetching", data=[], status=400)
 
