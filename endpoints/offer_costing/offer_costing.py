@@ -78,14 +78,24 @@ def calculate_transportation_out(products):
         # print(max_x)
         # print(max_y)
         # if max(float(max_x.get('x')), float(max_y.get('y'))) > float(config.MAX_WIDTH):
-        if float(max_x.get('x')) > float(max_y.get('y')):
-            max_w = float(max_x.get('x'))
-            prod.append(max_x)
-            temp_products.remove(max_x)
+        if i == 1:
+            if float(max_x.get('x')) > float(max_y.get('y')):
+                max_w = float(max_x.get('x'))
+                prod.append(max_x)
+                temp_products.remove(max_x)
+            else:
+                max_w = float(max_y.get('y'))
+                prod.append(max_y)
+                temp_products.remove(max_y)
         else:
-            max_w = float(max_y.get('y'))
-            prod.append(max_y)
-            temp_products.remove(max_y)
+            if float(max_x.get('x')) > float(max_y.get('y')):
+                max_w = float(max_x.get('y'))
+                prod.append(max_x)
+                temp_products.remove(max_x)
+            else:
+                max_w = float(max_y.get('x'))
+                prod.append(max_y)
+                temp_products.remove(max_y)
         if i == 1:
             max_init_w = max_w
         else:

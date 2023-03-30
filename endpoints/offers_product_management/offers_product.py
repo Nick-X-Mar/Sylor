@@ -93,8 +93,8 @@ def get_extra_costings(headers, dynamodb, p_id, m2):
         # print(f"data.get('product_name'): {data.get('product_name')}")
         # print(f"data.get('typology'): {data.get('typology')}")
         table = dynamodb.Table(DYNAMODB_EXTRA_COSTINGS_TABLE)
-        results = table.scan(FilterExpression=(Attr('productId').eq(data.get('product_name')) and
-                                               Attr('typologyId').eq(data.get('typology')) and
+        results = table.scan(FilterExpression=(Attr('productId').eq(data.get('product_name')) &
+                                               Attr('typologyId').eq(data.get('typology')) &
                                                Attr('typology_1').eq(data.get('typology_1'))))
         # print(results)
         results = results.get('Items')
