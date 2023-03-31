@@ -220,16 +220,18 @@ def get_days_costing_for_offerproducts(headers, dynamodb, offer_id):
                     number_of_products_added = 1
                 total_products += number_of_products_added
                 # print(f"offer_product.get('extra_costing_m2'): {offer_product.get('extra_costing_m2')}")
-                if offer_product.get('extra_costing_m2') is not None and offer_product.get(
-                        'extra_costing_m2') != 'None':
+                if offer_product.get('extra_costing_m2') is not None and offer_product.get('extra_costing_m2') != 'None':
                     extra_time_needed = float(offer_product.get('extra_costing_m2')) * number_of_products_added
                 else:
                     extra_time_needed = 0
+                # print(f"extra_time_needed: {extra_time_needed}")
                 if product.get('placement_h') is not None and offer_product.get('placement_h') != 'None':
                     units_placement = float(product.get('placement_h')) * number_of_products_added
                 else:
                     units_placement = 0
+                # print(f"units_placement: {units_placement}")
                 total_days_needed += extra_time_needed + units_placement
+                # print(f"total_days_needed: {total_days_needed}")
                 # if offer_product.get('product') == "a289f610-4b9e-45f6-9f87-f53f86b7ce3a":
                 #     print("aaaaaa")
                 #     print(grouped_products.get((product.get('product_name'))))
@@ -771,13 +773,13 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
             "extra_splitted_cost": str(v),
             "total_amount": str(total_amount)
         }
-        print(f"Sending body {body}")
+        # print(f"Sending body {body}")
 
         status, msg, data = update_offer_product(headers, offer_p, body)
         if status != 200:
             return func_resp(msg=msg, data=[], status=status)
 
-    print(f"offer_amount: {offer_amount} + total_charge_cost_amount: {total_charge_cost_amount} + offer_products_chars_amount: {offer_products_chars_amount} = {offer_amount + total_charge_cost_amount + offer_products_chars_amount}")
+    # print(f"offer_amount: {offer_amount} + total_charge_cost_amount: {total_charge_cost_amount} + offer_products_chars_amount: {offer_products_chars_amount} = {offer_amount + total_charge_cost_amount + offer_products_chars_amount}")
     offer_amount += total_charge_cost_amount + offer_products_chars_amount
     offer_fpa_percentage = 1 + float(offer_data.get("fpa")) / 100 if offer_data.get("fpa") is not None and offer_data.get("fpa") != "None" else 1.00
     offer_discount_percentage = 1 - float(offer_data.get("discount")) / 100 if offer_data.get("discount") is not None and offer_data.get("discount") != "None" else 1.00
@@ -788,7 +790,7 @@ def affect_products_with_offer_costing_charges(headers, dynamodb, offer, grouped
         "offer_fpa_amount": str(format(offer_discount_amount * offer_fpa_percentage, '.2f')),
         "offer_products_chars_amount": str(format(float(offer_products_chars_amount), '.2f'))
     }
-    print(f"Updating offer: {offer} with body : {body}")
+    # print(f"Updating offer: {offer} with body : {body}")
     status, msg, data = update_offer(offer, body)
     if status != 200:
         return func_resp(msg=msg, data=[], status=status)
@@ -864,6 +866,15 @@ def update_offer_costing_id(headers, offer_costing_id, body):
         else:
             attValues[":per_product_amount_actual"] = str(body.get('per_product_amount_actual'))
         last = True
+    if (body.get('trip_amount') is not None and body.get('trip_amount') != "") and (
+            body.get('people') is None or body.get('people') == "") and (
+            body.get('area') is None or body.get('area') == ""):
+        if last is True:
+            upEx += ","
+        upEx += " trip_amount = :trip_amount"
+        attValues[":trip_amount"] = str(body.get('trip_amount'))
+        last = True
+
     grouped_products = get_days_costing_for_offerproducts(headers, client, str(body.get('offer')))
 
     print(f"1. GP : {grouped_products}")
@@ -885,6 +896,7 @@ def update_offer_costing_id(headers, offer_costing_id, body):
         upEx += " trip_amount = :trip_amount"
         tp_am = str(format(float(float(body.get("area")) * int(body.get("people")) * float(config.WORK_HOUR_COST) +
                                  float(grouped_products.get('total_days_needed')) * float(config.WORK_HOUR_COST)), '.2f'))
+        print(f"Trip amount is : {tp_am}")
         attValues[":trip_amount"] = tp_am
         body["transportation_out"] = tp_am
 
@@ -896,14 +908,7 @@ def update_offer_costing_id(headers, offer_costing_id, body):
         upEx += " offer = :offer"
         attValues[":offer"] = str(body.get('offer'))
         last = True
-    if (body.get('trip_amount') is not None and body.get('trip_amount') != "") and (
-            body.get('people') is None or body.get('people') == "") and (
-            body.get('area') is None or body.get('area') == ""):
-        if last is True:
-            upEx += ","
-        upEx += " trip_amount = :trip_amount"
-        attValues[":trip_amount"] = str(body.get('trip_amount'))
-        last = True
+
     # if body.get('per_product_amount') is not None and body.get('per_product_amount') != "":
     if last is True:
         upEx += ","
