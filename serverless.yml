@@ -27,6 +27,18 @@ provider:
   runtime: python3.9
   region: eu-central-1
   memorySize: 128
+  httpApi:
+    cors:
+      allowCredentials: true
+      allowedHeaders:
+        - "*"
+      allowedMethods:
+        - POST
+        - GET
+        - PUT
+        - DELETE
+      allowedOrigins:
+        - "https://main.d2ll7sh31nv44t.amplifyapp.com"
   iamRoleStatements:
     - Effect: Allow
       Action:
