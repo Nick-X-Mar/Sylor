@@ -251,15 +251,10 @@ def get_days_costing_for_offerproducts(headers, dynamodb, offer_id):
                     #     print(str(int(grouped_products.get(product.get('product_name')).get('number_of_products')) + number_of_products_added))
                     #     print(grouped_products[product.get('product_name')])
                     grouped_products[product.get('product_name')] = {
-                        "number_of_products": str(int(grouped_products.get(product.get('product_name')).get(
-                            'number_of_products')) + number_of_products_added),
-                        "units_placement": str(float(grouped_products.get(product.get('product_name')).get(
-                            'units_placement')) + units_placement),
-                        "extra_time_needed": str(float(grouped_products.get(product.get('product_name')).get(
-                            'extra_time_needed')) + extra_time_needed),
-                        "total_time": str(
-                            float(grouped_products.get(product.get('product_name')).get('total_time')) + float(
-                                extra_time_needed) + float(units_placement))
+                        "number_of_products": str(int(grouped_products.get(product.get('product_name')).get('number_of_products')) + number_of_products_added),
+                        "units_placement": str(float(grouped_products.get(product.get('product_name')).get('units_placement')) + units_placement),
+                        "extra_time_needed": str(float(grouped_products.get(product.get('product_name')).get('extra_time_needed')) + extra_time_needed),
+                        "total_time": str(float(grouped_products.get(product.get('product_name')).get('total_time')) + float(extra_time_needed) + float(units_placement))
                     }
                     # print(grouped_products[product.get('product_name')])
                 grouped_products['total_days_needed'] = total_days_needed
@@ -874,69 +869,12 @@ def update_offer_costing_id(headers, offer_costing_id, body):
         upEx += " trip_amount = :trip_amount"
         attValues[":trip_amount"] = str(body.get('trip_amount'))
         last = True
-
-    grouped_products = get_days_costing_for_offerproducts(headers, client, str(body.get('offer')))
-
-    print(f"1. GP : {grouped_products}")
-    if isinstance(grouped_products, str):
-        return func_resp(msg=grouped_products, data=[], status=400)
-
-    if body.get('people') is not None and body.get('people') != "" and body.get('area') is not None and body.get('area') != "":
-        if last is True:
-            upEx += ","
-        upEx += " people = :people"
-        attValues[":people"] = str(body.get('people'))
-        last = True
-
-        upEx += ","
-        upEx += " area = :area"
-        attValues[":area"] = str(body.get('area'))
-
-        upEx += ","
-        upEx += " trip_amount = :trip_amount"
-        tp_am = str(format(float(float(body.get("area")) * int(body.get("people")) * float(config.WORK_HOUR_COST) +
-                                 float(grouped_products.get('total_days_needed')) * float(config.WORK_HOUR_COST)), '.2f'))
-        print(f"Trip amount is : {tp_am}")
-        attValues[":trip_amount"] = tp_am
-        body["transportation_out"] = tp_am
-
-        # 'per_product_amount': str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
-
     if body.get('offer') is not None and body.get('offer') != "":
         if last is True:
             upEx += ","
         upEx += " offer = :offer"
         attValues[":offer"] = str(body.get('offer'))
         last = True
-
-    # if body.get('per_product_amount') is not None and body.get('per_product_amount') != "":
-    if last is True:
-        upEx += ","
-    upEx += " per_product_amount = :per_product_amount"
-    attValues[":per_product_amount"] = str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
-    body["per_product_amount"] = str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
-    # last = True
-    # # if body.get('transportation_out') is not None and body.get('transportation_out') != "":
-    # if last is True:
-    upEx += ","
-    upEx += " transportation_out = :transportation_out"
-    attValues[":transportation_out"] = str(format(float(grouped_products['transportation_out']), '.2f'))
-    last = True
-
-    body["transportation_out"] = str(format(float(grouped_products['transportation_out']), '.2f'))
-    status, msg, grouped_products = affect_products_with_offer_costing_charges(headers, client, str(body.get('offer')),
-                                                                               grouped_products, body)
-    if status != 200:
-        return func_resp(msg=msg, data=[], status=400)
-
-    print(f"2. GP : {grouped_products}")
-    combine_grouped_products(grouped_products)
-    print(f"3. GP : {grouped_products}")
-    if last is True:
-        upEx += ","
-    upEx += " grouped_products = :grouped_products"
-    attValues[":grouped_products"] = json.dumps(grouped_products)
-    last = True
 
 
 
@@ -1006,6 +944,62 @@ def update_offer_costing_id(headers, offer_costing_id, body):
         upEx += " extra_cost_list = :extra_cost_list"
         attValues[":extra_cost_list"] = (body.get('extra_cost_list'))
         # last = True
+
+    grouped_products = get_days_costing_for_offerproducts(headers, client, str(body.get('offer')))
+
+    print(f"1. GP : {grouped_products}")
+    if isinstance(grouped_products, str):
+        return func_resp(msg=grouped_products, data=[], status=400)
+
+    if body.get('people') is not None and body.get('people') != "" and body.get('area') is not None and body.get('area') != "":
+        if last is True:
+            upEx += ","
+        upEx += " people = :people"
+        attValues[":people"] = str(body.get('people'))
+        last = True
+
+        upEx += ","
+        upEx += " area = :area"
+        attValues[":area"] = str(body.get('area'))
+
+        upEx += ","
+        upEx += " trip_amount = :trip_amount"
+        tp_am = str(format(float(float(body.get("area")) * int(body.get("people")) * float(config.WORK_HOUR_COST) +
+                                 float(grouped_products.get('total_days_needed')) * float(config.WORK_HOUR_COST)), '.2f'))
+        print(f"Trip amount is : {tp_am}")
+        attValues[":trip_amount"] = tp_am
+        body["trip_amount"] = tp_am
+
+        # 'per_product_amount': str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
+
+    # if body.get('per_product_amount') is not None and body.get('per_product_amount') != "":
+    if last is True:
+        upEx += ","
+    upEx += " per_product_amount = :per_product_amount"
+    attValues[":per_product_amount"] = str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
+    body["per_product_amount"] = str(format(float(config.PER_PRODUCT_COST) * float(grouped_products.get('total_products')), '.2f'))
+    # last = True
+    # # if body.get('transportation_out') is not None and body.get('transportation_out') != "":
+    # if last is True:
+    upEx += ","
+    upEx += " transportation_out = :transportation_out"
+    attValues[":transportation_out"] = str(format(float(grouped_products['transportation_out']), '.2f'))
+    last = True
+
+    body["transportation_out"] = str(format(float(grouped_products['transportation_out']), '.2f'))
+    status, msg, grouped_products = affect_products_with_offer_costing_charges(headers, client, str(body.get('offer')),
+                                                                               grouped_products, body)
+    if status != 200:
+        return func_resp(msg=msg, data=[], status=400)
+
+    print(f"2. GP : {grouped_products}")
+    combine_grouped_products(grouped_products)
+    print(f"3. GP : {grouped_products}")
+    if last is True:
+        upEx += ","
+    upEx += " grouped_products = :grouped_products"
+    attValues[":grouped_products"] = json.dumps(grouped_products)
+    last = True
 
     client, status = connect_to_dynamodb_resource()
     if status != 200:
