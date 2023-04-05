@@ -246,6 +246,8 @@ def user_related_methods(event, context):
 
     elif method == "PUT":
         username = event.get("queryStringParameters", {'username': None}).get("username")
+        if str(username) == "admin":
+            return api_resp(msg="Admin user cannot be updated", data=[], status=400)
         body = event.get("body")
         status, msg, data = check_request_put(headers, username, body)
         if status == 200:
@@ -255,6 +257,8 @@ def user_related_methods(event, context):
 
     elif method == "DELETE":
         username = event.get("queryStringParameters", {'username': None}).get("username")
+        if str(username) == "admin":
+            return api_resp(msg="Admin user cannot be deleted", data=[], status=400)
         status, msg, data = check_request_delete(headers, username)
         if status == 200:
             status, msg, data = delete_user(username)

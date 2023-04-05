@@ -16,6 +16,7 @@ custom:
   dynamodb:
     start:
       migrate: false # auto migrate on dynamodb start
+  prefix: prod-
 
 provider:
 #  s3:
@@ -26,6 +27,7 @@ provider:
   versionFunctions: false
   runtime: python3.9
   region: eu-central-1
+  profile: sylor-production
   memorySize: 128
   httpApi:
     cors:
@@ -38,7 +40,9 @@ provider:
         - PUT
         - DELETE
       allowedOrigins:
-        - "https://main.d2ll7sh31nv44t.amplifyapp.com"
+#        - "https://main.d2ll7sh31nv44t.amplifyapp.com"
+        - "https://www.sylorweb.com"
+#        - "https://sylor-production.dz00gaxqfokws.amplifyapp.com"
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -378,13 +382,13 @@ resources:
     SylorImgBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: sylorimgbucket
+        BucketName: ${self:custom.prefix}sylorimgbucket
         AccessControl: PublicRead
 
     sylorOfferCostings:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorOfferCostings
+        TableName: ${self:custom.prefix}sylorOfferCostings
         AttributeDefinitions:
           - AttributeName: offer_costing_id
             AttributeType: S
@@ -398,7 +402,7 @@ resources:
     sylorExtraCostings:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorExtraCostings
+        TableName: ${self:custom.prefix}sylorExtraCostings
         AttributeDefinitions:
           - AttributeName: extra_costing_id
             AttributeType: S
@@ -412,7 +416,7 @@ resources:
     sylorUsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorUsersTable
+        TableName: ${self:custom.prefix}sylorUsersTable
         AttributeDefinitions:
           - AttributeName: username
             AttributeType: S
@@ -426,7 +430,7 @@ resources:
     sylorTranslations:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorTranslations
+        TableName: ${self:custom.prefix}sylorTranslations
         AttributeDefinitions:
           - AttributeName: translation_id
             AttributeType: S
@@ -440,7 +444,7 @@ resources:
     sylorProductSpecifics:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorProductSpecifics
+        TableName: ${self:custom.prefix}sylorProductSpecifics
         AttributeDefinitions:
           - AttributeName: specifics_key
             AttributeType: S
@@ -454,7 +458,7 @@ resources:
     sylorProductCategorySchema:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorProductCategorySchema
+        TableName: ${self:custom.prefix}sylorProductCategorySchema
         AttributeDefinitions:
           - AttributeName: schemas_key
             AttributeType: S
@@ -468,7 +472,7 @@ resources:
     sylorProductGeneralSpecs:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorProductGeneralSpecs
+        TableName: ${self:custom.prefix}sylorProductGeneralSpecs
         AttributeDefinitions:
           - AttributeName: general_spec_key
             AttributeType: S
@@ -482,7 +486,7 @@ resources:
     sylorProducts:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorProducts
+        TableName: ${self:custom.prefix}sylorProducts
         AttributeDefinitions:
           - AttributeName: product_key
             AttributeType: S
@@ -496,7 +500,7 @@ resources:
     sylorClients:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorClients
+        TableName: ${self:custom.prefix}sylorClients
         AttributeDefinitions:
           - AttributeName: client_key
             AttributeType: S
@@ -510,7 +514,7 @@ resources:
     sylorOffers:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorOffers
+        TableName: ${self:custom.prefix}sylorOffers
         AttributeDefinitions:
           - AttributeName: offer_key
             AttributeType: S
@@ -524,7 +528,7 @@ resources:
     sylorOffersProduct:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: sylorOffersProduct
+        TableName: ${self:custom.prefix}sylorOffersProduct
         AttributeDefinitions:
           - AttributeName: offer_product_key
             AttributeType: S
